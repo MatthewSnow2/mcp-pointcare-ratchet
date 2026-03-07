@@ -1,7 +1,7 @@
 # =============================================================================
 # RATCHET MCP SERVER - Product Requirements Document
 # =============================================================================
-# Status: SKELETON - Blocked pending PointCare API documentation
+# Status: SKELETON - Production API integration pending vendor documentation
 # Last Updated: 2024-12-22
 # =============================================================================
 
@@ -40,30 +40,30 @@ integration:
   service_url: "https://www.pointcare.com"  # Main site - API URL TBD
 
   api:
-    base_url: "[BLOCKED - Acquire from PointCare]"
-    documentation_url: "[BLOCKED - Need to request]"
-    version: "[BLOCKED - Unknown]"
+    base_url: "[Pending: Acquire from PointCare]"
+    documentation_url: "[Pending: Need to request]"
+    version: "[Pending: Unknown]"
 
   auth:
-    type: "[BLOCKED - Likely OAuth2 or API Key]"
+    type: "[Pending: Likely OAuth2 or API Key]"
     # Possible options:
     # - api_key: Simple API key in header
     # - oauth2: OAuth 2.0 flow
     # - basic: Basic auth (unlikely for modern EMR)
 
   rate_limits:
-    requests_per_minute: "[BLOCKED - Unknown]"
-    daily_limit: "[BLOCKED - Unknown]"
+    requests_per_minute: "[Pending: Unknown]"
+    daily_limit: "[Pending: Unknown]"
 
 # -----------------------------------------------------------------------------
-# MCP TOOLS - BLOCKED PENDING API DOCUMENTATION
+# MCP TOOLS - Pending PENDING API DOCUMENTATION
 # -----------------------------------------------------------------------------
 tools:
   - name: "search_patient"
     description: |
       Search for a patient in the PointCare EMR system.
       Used to find patient records before creating visit notes.
-    status: "BLOCKED"
+    status: "Pending"
     blocked_reason: "Awaiting PointCare API documentation"
 
     parameters:
@@ -75,18 +75,18 @@ tools:
 
     returns:
       description: "List of matching patient records"
-      schema: "[BLOCKED - Need API response schema]"
+      schema: "[Pending: Need API response schema]"
 
     examples:
       - input:
           query: "John Smith"
-        output: "[BLOCKED - Need sample response]"
+        output: "[Pending: Need sample response]"
 
   - name: "create_visit_note"
     description: |
       Create a visit note for a patient in the PointCare EMR.
       This is the primary tool for documenting home health visits.
-    status: "BLOCKED"
+    status: "Pending"
     blocked_reason: "Awaiting PointCare API documentation"
 
     parameters:
@@ -102,19 +102,19 @@ tools:
 
     returns:
       description: "Confirmation of created visit note"
-      schema: "[BLOCKED - Need API response schema]"
+      schema: "[Pending: Need API response schema]"
 
     examples:
       - input:
           patientId: "PT-12345"
           note: "Patient vitals stable. Blood pressure 120/80..."
-        output: "[BLOCKED - Need sample response]"
+        output: "[Pending: Need sample response]"
 
   - name: "get_patient_history"
     description: |
       Retrieve visit history for a patient.
       Useful for context before creating new visit notes.
-    status: "BLOCKED"
+    status: "Pending"
     blocked_reason: "Awaiting PointCare API documentation"
 
     parameters:
@@ -130,13 +130,13 @@ tools:
 
     returns:
       description: "List of previous visit notes"
-      schema: "[BLOCKED - Need API response schema]"
+      schema: "[Pending: Need API response schema]"
 
     examples:
       - input:
           patientId: "PT-12345"
           limit: 5
-        output: "[BLOCKED - Need sample response]"
+        output: "[Pending: Need sample response]"
 
 # -----------------------------------------------------------------------------
 # MCP RESOURCES (Optional)
@@ -183,19 +183,19 @@ acceptance_criteria:
   functional:
     - id: "AC-F001"
       description: "search_patient returns matching patients within 2 seconds"
-      status: "BLOCKED"
+      status: "Pending"
 
     - id: "AC-F002"
       description: "create_visit_note successfully creates note in PointCare"
-      status: "BLOCKED"
+      status: "Pending"
 
     - id: "AC-F003"
       description: "get_patient_history returns chronological visit list"
-      status: "BLOCKED"
+      status: "Pending"
 
     - id: "AC-F004"
       description: "All tools handle authentication errors gracefully"
-      status: "BLOCKED"
+      status: "Pending"
 
     - id: "AC-F005"
       description: "MCP server starts and responds to tool list request"
@@ -212,7 +212,7 @@ acceptance_criteria:
 
     - id: "AC-NF003"
       description: "Response time < 3 seconds for all operations"
-      status: "BLOCKED"
+      status: "Pending"
 
 # -----------------------------------------------------------------------------
 # SECURITY REQUIREMENTS
@@ -250,10 +250,10 @@ testing:
 
   integration_tests:
     - description: "PointCare API connectivity"
-      status: "BLOCKED"
+      status: "Pending"
       blocked_reason: "Requires sandbox credentials"
     - description: "Full tool execution flow"
-      status: "BLOCKED"
+      status: "Pending"
 
   manual_tests:
     - description: "Claude Desktop integration"
@@ -271,29 +271,29 @@ grimlock_handoff:
       notes: "Skeleton complete, tools blocked"
 
     - item: "PointCare API documentation"
-      status: "BLOCKED"
+      status: "Pending"
       notes: "Must acquire from PointCare"
 
     - item: "Sample API responses"
-      status: "BLOCKED"
+      status: "Pending"
       notes: "Need for test fixtures"
 
     - item: "Test/sandbox credentials"
-      status: "BLOCKED"
+      status: "Pending"
       notes: "Required for integration tests"
 
     - item: "Authentication method details"
-      status: "BLOCKED"
+      status: "Pending"
       notes: "OAuth2, API Key, or other"
 
   api_documentation:
     available: false
-    location: "[BLOCKED]"
+    location: "[Pending]"
     notes: "Need to contact PointCare for API access"
 
   test_credentials:
     available: false
-    sandbox_url: "[BLOCKED]"
+    sandbox_url: "[Pending]"
     notes: "Need sandbox environment"
 
 # -----------------------------------------------------------------------------
@@ -327,12 +327,12 @@ success_metrics:
   - metric: "Time to document visit"
     baseline: "15+ minutes (manual entry)"
     target: "< 2 minutes (via Claude)"
-    status: "BLOCKED"
+    status: "Pending"
 
   - metric: "Documentation completeness"
     baseline: "Variable"
     target: "100% required fields"
-    status: "BLOCKED"
+    status: "Pending"
 
   - metric: "Nurse satisfaction"
     baseline: "N/A"

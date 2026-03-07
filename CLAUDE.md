@@ -60,11 +60,11 @@ ratchet/
 
 | Tool | Status | Description |
 |------|--------|-------------|
-| `search_patient` | BLOCKED | Find patient by name/ID/phone |
-| `create_visit_note` | BLOCKED | Document a patient visit |
-| `get_patient_history` | BLOCKED | Retrieve patient visit history |
+| `search_patient` | Working (Mock) | Find patient by name/ID/phone |
+| `create_visit_note` | Working (Mock) | Document a patient visit |
+| `get_patient_history` | Working (Mock) | Retrieve patient visit history |
 
-**Status**: Tools specification blocked pending PointCare API documentation.
+**Status**: Core tools working in mock mode. Production EMR API integration pending vendor API access.
 
 ## Environment Variables
 
@@ -77,8 +77,8 @@ POINTCARE_CLIENT_SECRET=  # OAuth client secret (if applicable)
 
 ## Current Status
 
-**Phase**: PRD Development (Week 1)
-**Blocker**: PointCare API documentation needed
+**Phase**: Mock Mode Complete — Ready for Claude Desktop Testing
+**Next milestone**: Production EMR API integration (pending vendor API access)
 
 ## Related Projects
 

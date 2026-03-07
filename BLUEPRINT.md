@@ -5,7 +5,7 @@ Phase tracking document for Ratchet MCP server development.
 ## Current Status
 
 **Phase:** Mock Mode Complete - Ready for Claude Desktop Testing
-**Blocker:** PointCare API documentation (for production mode)
+**Next milestone:** Production EMR API integration (pending vendor API access)
 **Last Updated:** 2024-12-22
 
 ---
@@ -16,9 +16,9 @@ Phase tracking document for Ratchet MCP server development.
 - [x] Create initial CLAUDE.md
 - [x] Create README.md
 - [x] Document M2AI NurseCall connection
-- [ ] **BLOCKED** - Acquire PointCare API documentation
-- [ ] **BLOCKED** - Obtain test/sandbox credentials
-- [ ] **BLOCKED** - Document authentication method
+- [ ] **Pending** - Acquire PointCare API documentation
+- [ ] **Pending** - Obtain test/sandbox credentials
+- [ ] **Pending** - Document authentication method
 
 **Status:** Complete (mock mode allows development to continue)
 
@@ -39,16 +39,16 @@ Phase tracking document for Ratchet MCP server development.
 
 ---
 
-## Phase 2: PRD Completion (BLOCKED)
+## Phase 2: PRD Completion (Pending Vendor API)
 
 - [x] Define `search_patient` tool parameters (mock)
 - [x] Define `create_visit_note` tool parameters (mock)
 - [x] Define `get_patient_history` tool parameters (mock)
-- [ ] **BLOCKED** - Document real API endpoints and response schemas
+- [ ] **Pending** - Document real API endpoints and response schemas
 - [x] Define acceptance criteria (functional) - skeleton
 - [x] Define acceptance criteria (non-functional) - skeleton
 - [x] Complete security section - skeleton
-- [ ] **BLOCKED** - Complete Grimlock handoff checklist
+- [ ] **Pending** - Complete Grimlock handoff checklist
 
 **Exit Criteria:** PRD ready for Grimlock sprint (needs API docs)
 
@@ -64,7 +64,7 @@ Phase tracking document for Ratchet MCP server development.
 - [x] `create_visit_note` tool implemented (mock mode)
 - [x] `get_patient_history` tool implemented (mock mode)
 - [x] Unit tests written
-- [ ] **BLOCKED** - Integration tests (need real API)
+- [ ] **Pending** - Integration tests (need real API)
 - [x] Documentation generated
 
 **Status:** Partially complete - Real API integration pending
@@ -74,7 +74,7 @@ Phase tracking document for Ratchet MCP server development.
 ## Phase 4: Week 2 Refinement
 
 - [ ] Human security review
-- [ ] **BLOCKED** - Manual integration testing with PointCare sandbox
+- [ ] **Pending** - Manual integration testing with PointCare sandbox
 - [x] Error handling review (mock mode)
 - [ ] Performance testing
 - [x] Documentation review
@@ -132,7 +132,7 @@ M2AI NurseCall (n8n)
         ▼
     Ratchet MCP ──> PointCare EMR
         ▲               │
-        │               └── BLOCKED (no API docs)
+        │               └── Pending (no API docs)
         │
     Grimlock (builder) ── deferred until API ready
 ```

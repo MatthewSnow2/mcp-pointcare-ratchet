@@ -4,7 +4,7 @@ This document outlines what information is needed from PointCare to complete the
 
 ## Status
 
-**Current Status:** BLOCKED - API documentation required
+**Current Status:** Pending — EMR vendor API documentation required for production integration
 
 ## Required Information
 
