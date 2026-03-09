@@ -1,73 +1,49 @@
-# mcp-ratchet-clinical-charting
+# Ratchet — Clinical Charting MCP Server
 
-**MCP server for clinical charting with Claude (codename: Ratchet)** - Enables Claude to document patient visits directly into Electronic Medical Records, reducing administrative burden for home health nurses.
+**Voice-to-structured-data for home health nursing.** Ratchet is an MCP server that enables Claude to document patient visits directly into Electronic Medical Records, eliminating hours of manual data entry for home health nurses.
 
-> **Note:** Currently runs in Mock Mode for development/testing. Production EMR integration coming soon.
+> Built by [MeMyselfPlusAI](https://memyselfplusai.com) — an RN co-founder with AccentCare field experience + an engineer building at the intersection of AI and healthcare.
 
-## Status
+## The Problem
 
-| Component | Status |
-|-----------|--------|
-| MCP Server | ✅ Working (Mock Mode) |
-| Unit Tests | ✅ 20/20 Passing |
-| Claude Desktop | ✅ Ready for Testing |
-| PointCare API | ⏳ Pending API Documentation |
+Home health nurses spend **35-45% of their workday** on documentation — filling out vitals, SOAP notes, care plans, and education checklists in clunky EMR systems. That's time taken away from patient care.
 
-**Current Mode:** Mock Mode - Uses realistic test data for development and testing.
+## How Ratchet Works
+
+```
+Nurse dictates visit notes in natural language
+        │
+        ▼
+Claude Desktop + Ratchet MCP
+  (voice → structured clinical data)
+        │
+        ▼
+EMR System (via API) + Live Dashboard
+```
+
+Ratchet gives Claude three MCP tools that map natural language to structured clinical documentation:
+
+| Tool | What It Does |
+|------|-------------|
+| `search_patient` | Find patients by name, ID, or phone number |
+| `create_visit_note` | Document a full visit — vitals, SOAP notes, interventions, education |
+| `get_patient_history` | Retrieve previous visits for clinical context |
+
+A nurse says *"Jane Marple, BP 138/82, heart rate 76, O2 sat 97. Assessed bilateral feet — diminished sensation at 4 of 10 sites. Educated on daily foot inspection with mirror technique."* — and Ratchet structures it into validated clinical data with ICD-10-aware fields.
+
+## Screenshots
+
+| Dashboard | Patient Detail |
+|-----------|---------------|
+| ![Dashboard](docs/dashboard-schedule.png) | ![Patient Detail](docs/patient-detail.png) |
+
+*Screenshots show the companion [EMR Dashboard](https://github.com/m2ai-mcp-servers/ratchet-demo-emr) displaying data populated by Ratchet via Claude.*
 
 ## Quick Start
 
-### From npm (Recommended)
+### Claude Desktop
 
-```bash
-npx mcp-ratchet-clinical-charting
-```
-
-### From Source
-
-```bash
-git clone https://github.com/m2ai-mcp-servers/mcp-ratchet-clinical-charting.git
-cd mcp-ratchet-clinical-charting
-npm install
-npm run build
-npm run dev  # Development mode
-npm test     # Run tests
-```
-
-## Mock Mode
-
-Ratchet runs in **mock mode** by default when `POINTCARE_API_URL` is not configured. Mock mode:
-- Uses 5 fictional test patients
-- Stores visit notes in memory
-- Returns realistic responses
-- Perfect for development and Claude Desktop testing
-
-## Available Tools
-
-| Tool | Description | Mock Mode |
-|------|-------------|-----------|
-| `search_patient` | Find patient by name, ID, or phone | ✅ Working |
-| `create_visit_note` | Document a patient visit with vitals | ✅ Working |
-| `get_patient_history` | Retrieve patient visit history | ✅ Working |
-
-### Example Usage (in Claude)
-
-```
-"Search for patient Eleanor Thompson"
-→ Returns patient PT-10001 with demographics and status
-
-"Create a visit note for PT-10001 with blood pressure 120/80"
-→ Creates and stores visit note with vitals
-
-"Get visit history for PT-10001"
-→ Returns list of previous visits
-```
-
-## Claude Desktop Integration
-
-### Configure Claude Desktop
-
-Add to your Claude Desktop config file:
+Add to your Claude Desktop config:
 
 **macOS:** `~/Library/Application Support/Claude/claude_desktop_config.json`
 **Windows:** `%APPDATA%\Claude\claude_desktop_config.json`
@@ -83,140 +59,103 @@ Add to your Claude Desktop config file:
 }
 ```
 
-For production mode with EMR integration:
+Restart Claude Desktop. Try: *"Search for patient Jane Marple"*
 
-```json
-{
-  "mcpServers": {
-    "ratchet": {
-      "command": "npx",
-      "args": ["-y", "mcp-ratchet-clinical-charting"],
-      "env": {
-        "POINTCARE_API_URL": "https://api.pointcare.com",
-        "POINTCARE_API_KEY": "your-api-key"
-      }
-    }
-  }
-}
+### From Source
+
+```bash
+git clone https://github.com/m2ai-mcp-servers/mcp-ratchet-clinical-charting.git
+cd mcp-ratchet-clinical-charting
+npm install
+npm run build
+npm test     # 34 tests passing
 ```
 
-### Step 3: Restart Claude Desktop
+## PHI-Safe Engineering
 
-Restart Claude Desktop to load the new MCP server.
+Ratchet is built for healthcare from day one — not retrofitted:
 
-### Step 4: Verify
+- **Log sanitization** — Patient IDs, names, diagnoses, medications, and notes are automatically redacted from all log output
+- **Field-level redaction** — Sensitive fields are replaced with `[REDACTED]` before any data reaches stderr
+- **Audit trail** — Operations logged with success/failure and duration, without exposing clinical data
+- **Clinical validation** — Vital sign ranges validated (e.g., systolic BP 50-300, O2 sat 50-100%, pain 0-10)
 
-In Claude Desktop, you should see:
-- `search_patient` tool available
-- `create_visit_note` tool available
-- `get_patient_history` tool available
+See [SECURITY.md](SECURITY.md) for the full security policy and HIPAA compliance roadmap.
 
-Try: "Search for patient Eleanor"
+## Demo Mode
 
-## Test Patients (Mock Mode)
+Ratchet runs in **mock mode** by default — no API keys needed. Mock mode uses synthetic patient data from Agatha Christie characters (clearly fictional):
 
 | ID | Name | Status | Primary Diagnosis |
 |----|------|--------|-------------------|
-| PT-10001 | Eleanor Thompson | Active | Type 2 Diabetes, CHF |
-| PT-10002 | Robert Martinez | Active | COPD, Post-surgical |
-| PT-10003 | Margaret Wilson | Active | Parkinson's Disease |
-| PT-10004 | James Thompson | Active | Post-stroke rehab |
-| PT-10005 | Dorothy Anderson | Discharged | Hip replacement |
+| PT-10001 | Jane Marple | Active | Type 2 Diabetes, CHF |
+| PT-10002 | Hercule Poirot | Active | Heart Failure, AFib, CKD Stage 3 |
+| PT-10003 | Ariadne Oliver | Active | Parkinson's Disease |
+| PT-10004 | Arthur Hastings | Active | Post-stroke rehab |
+| PT-10005 | Felicity Lemon | Discharged | Hip replacement recovery |
 
-## Origin Story
-
-Ratchet evolved from the **M2AI NurseCall** n8n workflow, built to help home health nurses with visit documentation:
+### Example Conversation
 
 ```
-Current Flow (M2AI NurseCall):
-┌─────────┐    ┌─────────┐    ┌─────────┐    ┌─────────┐
-│ Twilio  │───>│  n8n    │───>│  VAPI   │───>│  Email  │
-│  SMS    │    │ Workflow│    │  Call   │    │ Summary │
-└─────────┘    └─────────┘    └─────────┘    └─────────┘
-```
+You: "Search for patient Jane Marple"
+Claude: Found 1 patient — Jane Marple (PT-10001), Active, Type 2 Diabetes
 
-**The Problem:** Visit notes go to email but still need manual entry into PointCare EMR.
+You: "Create a visit note for PT-10001. BP 138/82, HR 76, O2 97%.
+      Subjective: patient reports tingling in feet. Educated on foot care."
+Claude: ✅ Visit note VN-30001 created — 45 min skilled nursing visit
+        Vitals recorded, SOAP documented, education logged.
 
-**Ratchet's Solution:**
-```
-Future Flow (with Ratchet):
-┌─────────┐    ┌─────────┐    ┌──────────┐    ┌───────────┐
-│ Twilio  │───>│  n8n    │───>│ Ratchet  │───>│ PointCare │
-│  SMS    │    │ Workflow│    │   MCP    │    │    EMR    │
-└─────────┘    └─────────┘    └──────────┘    └───────────┘
+You: "Get visit history for PT-10001"
+Claude: 2 previous visits found (most recent: 2024-12-20)
 ```
 
 ## Configuration
 
 | Variable | Required | Description |
 |----------|----------|-------------|
-| `POINTCARE_API_URL` | No* | PointCare API base URL |
-| `POINTCARE_API_KEY` | No* | API key or token |
+| `POINTCARE_API_URL` | No* | EMR API base URL |
+| `POINTCARE_API_KEY` | No* | EMR API key |
+| `SUPABASE_URL` | No | Supabase URL for dashboard sync |
+| `SUPABASE_SERVICE_KEY` | No | Supabase key for dashboard sync |
 | `RATCHET_MOCK_MODE` | No | Force mock mode (`true`/`false`) |
-| `LOG_LEVEL` | No | Logging level (`debug`/`info`/`warn`/`error`) |
+| `LOG_LEVEL` | No | `debug` / `info` / `warn` / `error` |
 
-*Required for production use. Mock mode activates when not set.
+*Required for production EMR integration. Mock mode activates automatically when not set.
 
-## Project Structure
+## Architecture
 
 ```
-ratchet/
-├── src/
-│   ├── index.ts              # MCP server entry point
-│   ├── config.ts             # Configuration management
-│   ├── tools/                # Tool implementations
-│   │   ├── search-patient.ts
-│   │   ├── create-visit-note.ts
-│   │   └── get-patient-history.ts
-│   ├── services/             # Business logic
-│   │   ├── patient-service.ts
-│   │   └── mock-data.ts
-│   ├── types/                # TypeScript types
-│   └── utils/                # Logger, errors
-├── tests/
-│   └── patient-service.test.ts
-├── dist/                     # Compiled output
-├── prds/
-│   └── RATCHET-PRD.yaml
-├── docs/
-│   └── API_REQUIREMENTS.md
-├── package.json
-├── tsconfig.json
-└── jest.config.js
+src/
+├── index.ts              # MCP server entry (stdio transport)
+├── config.ts             # Environment + mode configuration
+├── tools/                # MCP tool definitions + handlers
+│   ├── search-patient.ts
+│   ├── create-visit-note.ts
+│   └── get-patient-history.ts
+├── services/             # Business logic + data layer
+│   ├── patient-service.ts
+│   ├── mock-data.ts
+│   └── supabase-service.ts
+├── types/                # TypeScript interfaces (Patient, Visit, VitalSigns)
+└── utils/
+    ├── logger.ts         # PHI-safe logger with field redaction
+    └── errors.ts         # Typed error classes
 ```
 
 ## Development
 
 ```bash
-# Run in watch mode
-npm run dev
-
-# Run tests
-npm test
-
-# Run tests with coverage
+npm run dev          # Watch mode (tsx)
+npm test             # Jest (34 tests)
 npm test -- --coverage
-
-# Lint
-npm run lint
+npm run build        # TypeScript → dist/
 ```
-
-## Next Steps
-
-1. **Acquire PointCare API documentation** - See `docs/API_REQUIREMENTS.md`
-2. **Complete PRD** - Fill in tool specifications with real API details
-3. **Implement real API calls** - Replace mock responses
-4. **Integration testing** - Test with PointCare sandbox
 
 ## Related Projects
 
-- **[GRIMLOCK](https://github.com/m2ai-portfolio/grimlock)** - Autonomous MCP Server Factory
-- **[ratchet-demo-emr](https://github.com/m2ai-mcp-servers/ratchet-demo-emr)** - Demo EMR React app for testing
+- **[Ratchet EMR Dashboard](https://github.com/m2ai-mcp-servers/ratchet-demo-emr)** — React dashboard displaying visit data populated by this MCP server
+- **[Live Demo](https://pointcare-emr-demo.netlify.app)** — Deployed dashboard with synthetic patient data
 
 ## License
 
 MIT
-
----
-
-*Built with [GRIMLOCK](https://github.com/m2ai-portfolio/grimlock) - Autonomous MCP Server Factory*

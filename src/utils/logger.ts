@@ -38,9 +38,9 @@ function sanitize(data: unknown): unknown {
     for (const [key, value] of Object.entries(data)) {
       // Redact sensitive fields entirely
       const sensitiveFields = [
-        'name', 'firstName', 'lastName', 'patientName',
-        'phone', 'phoneNumber', 'email', 'address',
-        'ssn', 'socialSecurity', 'dob', 'dateOfBirth',
+        'name', 'firstname', 'lastname', 'patientname',
+        'phone', 'phonenumber', 'email', 'address',
+        'ssn', 'socialsecurity', 'dob', 'dateofbirth',
         'diagnosis', 'condition', 'medication', 'note', 'notes',
       ];
 
@@ -64,13 +64,14 @@ function sanitize(data: unknown): unknown {
 function formatMessage(level: LogLevel, message: string, data?: unknown): string {
   const timestamp = new Date().toISOString();
   const prefix = `[${timestamp}] [RATCHET] [${level.toUpperCase()}]`;
+  const sanitizedMessage = sanitize(message) as string;
 
   if (data !== undefined) {
     const sanitizedData = sanitize(data);
-    return `${prefix} ${message} ${JSON.stringify(sanitizedData)}`;
+    return `${prefix} ${sanitizedMessage} ${JSON.stringify(sanitizedData)}`;
   }
 
-  return `${prefix} ${message}`;
+  return `${prefix} ${sanitizedMessage}`;
 }
 
 /**

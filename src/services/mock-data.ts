@@ -22,8 +22,8 @@ export const mockPatients: Patient[] = [
   {
     id: { id: 'PT-10001', mrn: 'MRN-001' },
     demographics: {
-      firstName: 'Eleanor',
-      lastName: 'Thompson',
+      firstName: 'Jane',
+      lastName: 'Marple',
       dateOfBirth: '1942-03-15',
       gender: 'female',
     },
@@ -32,9 +32,9 @@ export const mockPatients: Patient[] = [
       phoneType: 'home',
       address: {
         street1: '123 Oak Street',
-        city: 'Springfield',
-        state: 'IL',
-        zipCode: '62701',
+        city: 'Nashville',
+        state: 'TN',
+        zipCode: '37201',
       },
     },
     insurance: {
@@ -44,7 +44,7 @@ export const mockPatients: Patient[] = [
     careTeam: {
       primaryNurse: 'Sarah Johnson, RN',
       primaryPhysician: 'Dr. Michael Chen',
-      agency: 'Springfield Home Health',
+      agency: 'Nashville Home Health',
     },
     status: 'active',
     admissionDate: '2024-11-01',
@@ -55,8 +55,8 @@ export const mockPatients: Patient[] = [
   {
     id: { id: 'PT-10002', mrn: 'MRN-002' },
     demographics: {
-      firstName: 'Robert',
-      lastName: 'Martinez',
+      firstName: 'Hercule',
+      lastName: 'Poirot',
       dateOfBirth: '1955-07-22',
       gender: 'male',
     },
@@ -66,9 +66,9 @@ export const mockPatients: Patient[] = [
       address: {
         street1: '456 Maple Avenue',
         street2: 'Apt 2B',
-        city: 'Springfield',
-        state: 'IL',
-        zipCode: '62702',
+        city: 'Nashville',
+        state: 'TN',
+        zipCode: '37203',
       },
     },
     insurance: {
@@ -78,19 +78,19 @@ export const mockPatients: Patient[] = [
     careTeam: {
       primaryNurse: 'Sarah Johnson, RN',
       primaryPhysician: 'Dr. Lisa Wong',
-      agency: 'Springfield Home Health',
+      agency: 'Nashville Home Health',
     },
     status: 'active',
     admissionDate: '2024-10-15',
-    diagnosis: ['COPD', 'Post-surgical wound care'],
+    diagnosis: ['Heart Failure', 'Atrial Fibrillation', 'Chronic Kidney Disease Stage 3'],
     createdAt: '2024-10-15T09:00:00Z',
     updatedAt: '2024-12-19T11:00:00Z',
   },
   {
     id: { id: 'PT-10003', mrn: 'MRN-003' },
     demographics: {
-      firstName: 'Margaret',
-      lastName: 'Wilson',
+      firstName: 'Ariadne',
+      lastName: 'Oliver',
       dateOfBirth: '1938-11-08',
       gender: 'female',
     },
@@ -100,9 +100,9 @@ export const mockPatients: Patient[] = [
       alternatePhone: '555-0104',
       address: {
         street1: '789 Pine Road',
-        city: 'Springfield',
-        state: 'IL',
-        zipCode: '62703',
+        city: 'Nashville',
+        state: 'TN',
+        zipCode: '37205',
       },
     },
     insurance: {
@@ -112,7 +112,7 @@ export const mockPatients: Patient[] = [
     careTeam: {
       primaryNurse: 'James Miller, RN',
       primaryPhysician: 'Dr. Michael Chen',
-      agency: 'Springfield Home Health',
+      agency: 'Nashville Home Health',
     },
     status: 'active',
     admissionDate: '2024-09-01',
@@ -123,8 +123,8 @@ export const mockPatients: Patient[] = [
   {
     id: { id: 'PT-10004', mrn: 'MRN-004' },
     demographics: {
-      firstName: 'James',
-      lastName: 'Thompson',
+      firstName: 'Arthur',
+      lastName: 'Hastings',
       dateOfBirth: '1960-04-30',
       gender: 'male',
     },
@@ -133,9 +133,9 @@ export const mockPatients: Patient[] = [
       phoneType: 'mobile',
       address: {
         street1: '321 Elm Street',
-        city: 'Springfield',
-        state: 'IL',
-        zipCode: '62704',
+        city: 'Nashville',
+        state: 'TN',
+        zipCode: '37204',
       },
     },
     insurance: {
@@ -145,7 +145,7 @@ export const mockPatients: Patient[] = [
     careTeam: {
       primaryNurse: 'Sarah Johnson, RN',
       primaryPhysician: 'Dr. Lisa Wong',
-      agency: 'Springfield Home Health',
+      agency: 'Nashville Home Health',
     },
     status: 'active',
     admissionDate: '2024-12-01',
@@ -156,8 +156,8 @@ export const mockPatients: Patient[] = [
   {
     id: { id: 'PT-10005', mrn: 'MRN-005' },
     demographics: {
-      firstName: 'Dorothy',
-      lastName: 'Anderson',
+      firstName: 'Felicity',
+      lastName: 'Lemon',
       dateOfBirth: '1945-09-12',
       gender: 'female',
     },
@@ -166,9 +166,9 @@ export const mockPatients: Patient[] = [
       phoneType: 'home',
       address: {
         street1: '654 Birch Lane',
-        city: 'Springfield',
-        state: 'IL',
-        zipCode: '62705',
+        city: 'Nashville',
+        state: 'TN',
+        zipCode: '37206',
       },
     },
     insurance: {
@@ -178,7 +178,7 @@ export const mockPatients: Patient[] = [
     careTeam: {
       primaryNurse: 'James Miller, RN',
       primaryPhysician: 'Dr. Michael Chen',
-      agency: 'Springfield Home Health',
+      agency: 'Nashville Home Health',
     },
     status: 'discharged',
     admissionDate: '2024-08-01',
@@ -193,7 +193,7 @@ export const mockPatients: Patient[] = [
  * Mock visit notes database
  */
 export const mockVisitNotes: VisitNote[] = [
-  // Eleanor Thompson's visits
+  // Jane Marple's visits
   {
     id: 'VN-20001',
     patientId: 'PT-10001',
@@ -262,7 +262,7 @@ export const mockVisitNotes: VisitNote[] = [
     createdAt: '2024-12-17T10:50:00Z',
     updatedAt: '2024-12-17T11:00:00Z',
   },
-  // Robert Martinez's visits
+  // Hercule Poirot's visits
   {
     id: 'VN-20003',
     patientId: 'PT-10002',
@@ -280,13 +280,13 @@ export const mockVisitNotes: VisitNote[] = [
       temperatureUnit: 'F',
       oxygenSaturation: 93,
     },
-    subjective: 'Patient reports wound is less painful. Using incentive spirometer as instructed.',
-    objective: 'Surgical wound healing well. Minimal serous drainage. No signs of infection.',
-    assessment: 'Wound healing as expected. COPD stable on current regimen.',
-    plan: 'Continue wound care. Next dressing change in 2 days.',
-    interventions: ['Wound assessment', 'Dressing change', 'Respiratory assessment'],
-    patientResponse: 'Patient performing wound care independently with good technique.',
-    education: ['Signs of wound infection', 'Breathing exercises'],
+    subjective: 'Patient reports mild ankle swelling this morning. Denies chest pain or shortness of breath at rest. States he has been monitoring weight daily.',
+    objective: 'Alert and oriented. 1+ pitting edema bilateral ankles. Lungs clear bilaterally. Weight 185 lbs, up 1.5 lbs from last visit. Heart irregular rhythm consistent with known AFib.',
+    assessment: 'Heart failure stable with mild fluid retention. AFib rate-controlled. Weight trending up — monitor closely.',
+    plan: 'Continue current medications. Reinforce sodium restriction. Patient to elevate legs when seated. Follow up in 2 days to recheck weight.',
+    interventions: ['Heart failure assessment', 'Weight monitoring', 'Edema assessment', 'Medication reconciliation'],
+    patientResponse: 'Patient engaged and asking appropriate questions about sodium intake.',
+    education: ['Daily weight monitoring technique', 'Low sodium diet review', 'Signs of heart failure worsening'],
     nextVisitDate: '2024-12-21',
     nurseId: 'RN-001',
     nurseName: 'Sarah Johnson, RN',
@@ -295,7 +295,7 @@ export const mockVisitNotes: VisitNote[] = [
     createdAt: '2024-12-19T14:40:00Z',
     updatedAt: '2024-12-19T15:00:00Z',
   },
-  // Margaret Wilson's visits
+  // Ariadne Oliver's visits
   {
     id: 'VN-20004',
     patientId: 'PT-10003',

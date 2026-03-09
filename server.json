@@ -29,6 +29,20 @@
           "isRequired": false,
           "format": "string",
           "isSecret": true
+        },
+        {
+          "name": "SUPABASE_URL",
+          "description": "Supabase project URL for dashboard sync (optional)",
+          "isRequired": false,
+          "format": "string",
+          "isSecret": false
+        },
+        {
+          "name": "SUPABASE_SERVICE_KEY",
+          "description": "Supabase service role key for dashboard sync (optional)",
+          "isRequired": false,
+          "format": "string",
+          "isSecret": true
         }
       ]
     }

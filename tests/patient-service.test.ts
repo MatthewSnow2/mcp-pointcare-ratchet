@@ -19,10 +19,10 @@ beforeEach(() => {
 
 describe('searchPatients', () => {
   test('should find patient by name', async () => {
-    const result = await searchPatients({ query: 'Eleanor' });
+    const result = await searchPatients({ query: 'Jane' });
 
     expect(result.results.length).toBeGreaterThan(0);
-    expect(result.results[0].firstName).toBe('Eleanor');
+    expect(result.results[0].firstName).toBe('Jane');
   });
 
   test('should find patient by ID', async () => {
@@ -40,7 +40,7 @@ describe('searchPatients', () => {
   });
 
   test('should filter by status', async () => {
-    const result = await searchPatients({ query: 'Thompson', status: 'active' });
+    const result = await searchPatients({ query: 'Marple', status: 'active' });
 
     result.results.forEach((patient) => {
       expect(patient.status).toBe('active');
@@ -72,8 +72,8 @@ describe('getPatient', () => {
     const patient = await getPatient('PT-10001');
 
     expect(patient.id.id).toBe('PT-10001');
-    expect(patient.demographics.firstName).toBe('Eleanor');
-    expect(patient.demographics.lastName).toBe('Thompson');
+    expect(patient.demographics.firstName).toBe('Jane');
+    expect(patient.demographics.lastName).toBe('Marple');
   });
 
   test('should throw NotFoundError for invalid ID', async () => {
@@ -90,7 +90,7 @@ describe('getPatientHistory', () => {
     const result = await getPatientHistory({ patientId: 'PT-10001' });
 
     expect(result.patientId).toBe('PT-10001');
-    expect(result.patientName).toBe('Eleanor Thompson');
+    expect(result.patientName).toBe('Jane Marple');
     expect(result.visits.length).toBeGreaterThan(0);
   });
 

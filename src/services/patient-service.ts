@@ -231,6 +231,51 @@ export async function createVisitNote(
     throw new ValidationError('Time out is required', 'timeOut');
   }
 
+  // Validate clinical ranges if vital signs provided
+  if (params.vitalSigns) {
+    const vs = params.vitalSigns;
+    if (vs.bloodPressureSystolic !== undefined && (vs.bloodPressureSystolic < 50 || vs.bloodPressureSystolic > 300)) {
+      throw new ValidationError('Systolic BP must be between 50-300 mmHg', 'vitalSigns.bloodPressureSystolic');
+    }
+    if (vs.bloodPressureDiastolic !== undefined && (vs.bloodPressureDiastolic < 20 || vs.bloodPressureDiastolic > 200)) {
+      throw new ValidationError('Diastolic BP must be between 20-200 mmHg', 'vitalSigns.bloodPressureDiastolic');
+    }
+    if (vs.heartRate !== undefined && (vs.heartRate < 20 || vs.heartRate > 250)) {
+      throw new ValidationError('Heart rate must be between 20-250 bpm', 'vitalSigns.heartRate');
+    }
+    if (vs.respiratoryRate !== undefined && (vs.respiratoryRate < 4 || vs.respiratoryRate > 60)) {
+      throw new ValidationError('Respiratory rate must be between 4-60 breaths/min', 'vitalSigns.respiratoryRate');
+    }
+    if (vs.temperature !== undefined) {
+      const unit = vs.temperatureUnit || 'F';
+      if (unit === 'F' && (vs.temperature < 90 || vs.temperature > 110)) {
+        throw new ValidationError('Temperature must be between 90-110°F', 'vitalSigns.temperature');
+      }
+      if (unit === 'C' && (vs.temperature < 32 || vs.temperature > 43)) {
+        throw new ValidationError('Temperature must be between 32-43°C', 'vitalSigns.temperature');
+      }
+    }
+    if (vs.oxygenSaturation !== undefined && (vs.oxygenSaturation < 50 || vs.oxygenSaturation > 100)) {
+      throw new ValidationError('O2 saturation must be between 50-100%', 'vitalSigns.oxygenSaturation');
+    }
+    if (vs.painLevel !== undefined && (vs.painLevel < 0 || vs.painLevel > 10)) {
+      throw new ValidationError('Pain level must be between 0-10', 'vitalSigns.painLevel');
+    }
+  }
+
+  // Validate date format (YYYY-MM-DD)
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(params.visitDate)) {
+    throw new ValidationError('Visit date must be in YYYY-MM-DD format', 'visitDate');
+  }
+
+  // Validate time format (HH:MM)
+  if (!/^\d{2}:\d{2}$/.test(params.timeIn)) {
+    throw new ValidationError('Time in must be in HH:MM format', 'timeIn');
+  }
+  if (!/^\d{2}:\d{2}$/.test(params.timeOut)) {
+    throw new ValidationError('Time out must be in HH:MM format', 'timeOut');
+  }
+
   if (config.mockMode) {
     // Verify patient exists
     const patient = mockPatients.find((p) => p.id.id === params.patientId);
