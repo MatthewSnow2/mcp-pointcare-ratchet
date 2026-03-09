@@ -26,6 +26,22 @@ import {
   executeCreateVisitNote,
   getPatientHistoryTool,
   executeGetPatientHistory,
+  getCareTeamTool,
+  executeGetCareTeam,
+  getScheduleTool,
+  executeGetSchedule,
+  startVisitTool,
+  executeStartVisit,
+  updateVisitNoteTool,
+  executeUpdateVisitNote,
+  completeVisitTool,
+  executeCompleteVisit,
+  cancelVisitTool,
+  executeCancelVisit,
+  scheduleNextVisitTool,
+  executeScheduleNextVisit,
+  manageCarePlanTool,
+  executeManageCarePlan,
 } from './tools/index.js';
 
 // Load configuration
@@ -56,6 +72,14 @@ const TOOLS = [
   searchPatientTool,
   createVisitNoteTool,
   getPatientHistoryTool,
+  getCareTeamTool,
+  getScheduleTool,
+  startVisitTool,
+  updateVisitNoteTool,
+  completeVisitTool,
+  cancelVisitTool,
+  scheduleNextVisitTool,
+  manageCarePlanTool,
 ];
 
 // Tool executor map
@@ -66,6 +90,14 @@ const toolExecutors: Record<string, (args: Record<string, unknown>) => Promise<{
   search_patient: executeSearchPatient,
   create_visit_note: executeCreateVisitNote,
   get_patient_history: executeGetPatientHistory,
+  get_care_team: executeGetCareTeam,
+  get_schedule: executeGetSchedule,
+  start_visit: executeStartVisit,
+  update_visit_note: executeUpdateVisitNote,
+  complete_visit: executeCompleteVisit,
+  cancel_visit: executeCancelVisit,
+  schedule_next_visit: executeScheduleNextVisit,
+  manage_care_plan: executeManageCarePlan,
 };
 
 // List available tools

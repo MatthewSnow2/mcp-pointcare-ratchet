@@ -13,6 +13,8 @@ import type {
   VisitNote,
   VisitNoteSummary,
   VisitType,
+  ScheduledVisit,
+  CarePlan,
 } from '../types/index.js';
 
 /**
@@ -329,6 +331,168 @@ export const mockVisitNotes: VisitNote[] = [
     updatedAt: '2024-12-18T12:30:00Z',
   },
 ];
+
+/**
+ * Mock scheduled visits
+ */
+export const mockSchedule: ScheduledVisit[] = [
+  {
+    id: 'SV-40001',
+    patientId: 'PT-10001',
+    patientName: 'Jane Marple',
+    nurseId: 'RN-001',
+    nurseName: 'Sarah Johnson, RN',
+    visitType: 'skilled_nursing',
+    status: 'scheduled',
+    scheduledDate: '2024-12-23',
+    scheduledTime: '09:00',
+    estimatedDuration: 45,
+    address: '123 Oak Street, Nashville, TN 37201',
+  },
+  {
+    id: 'SV-40002',
+    patientId: 'PT-10002',
+    patientName: 'Hercule Poirot',
+    nurseId: 'RN-001',
+    nurseName: 'Sarah Johnson, RN',
+    visitType: 'skilled_nursing',
+    status: 'scheduled',
+    scheduledDate: '2024-12-23',
+    scheduledTime: '11:00',
+    estimatedDuration: 40,
+    address: '456 Maple Avenue, Apt 2B, Nashville, TN 37203',
+  },
+  {
+    id: 'SV-40003',
+    patientId: 'PT-10003',
+    patientName: 'Ariadne Oliver',
+    nurseId: 'RN-002',
+    nurseName: 'James Miller, RN',
+    visitType: 'skilled_nursing',
+    status: 'scheduled',
+    scheduledDate: '2024-12-25',
+    scheduledTime: '10:00',
+    estimatedDuration: 60,
+    address: '789 Pine Road, Nashville, TN 37205',
+  },
+  {
+    id: 'SV-40004',
+    patientId: 'PT-10004',
+    patientName: 'Arthur Hastings',
+    nurseId: 'RN-001',
+    nurseName: 'Sarah Johnson, RN',
+    visitType: 'physical_therapy',
+    status: 'scheduled',
+    scheduledDate: '2024-12-24',
+    scheduledTime: '14:00',
+    estimatedDuration: 60,
+    address: '321 Elm Street, Nashville, TN 37204',
+    notes: 'Post-stroke PT evaluation — assess upper extremity function',
+  },
+];
+
+/**
+ * Mock care plans
+ */
+export const mockCarePlans: CarePlan[] = [
+  {
+    patientId: 'PT-10001',
+    goals: [
+      {
+        id: 'G-50001',
+        description: 'Maintain blood pressure below 140/90 mmHg',
+        targetDate: '2025-02-01',
+        status: 'active',
+        progress: 'BP trending down. Last reading 138/82.',
+        createdAt: '2024-11-01T10:00:00Z',
+        updatedAt: '2024-12-20T10:00:00Z',
+      },
+      {
+        id: 'G-50002',
+        description: 'Patient will verbalize 3 signs of CHF worsening',
+        targetDate: '2025-01-15',
+        status: 'met',
+        progress: 'Patient demonstrated understanding on 12/20 visit.',
+        createdAt: '2024-11-01T10:00:00Z',
+        updatedAt: '2024-12-20T10:00:00Z',
+      },
+      {
+        id: 'G-50003',
+        description: 'Maintain HbA1c below 7.0%',
+        targetDate: '2025-03-01',
+        status: 'active',
+        progress: 'Blood sugars reported as stable. Next lab draw 01/15.',
+        createdAt: '2024-11-01T10:00:00Z',
+        updatedAt: '2024-12-20T10:00:00Z',
+      },
+    ],
+    lastReviewDate: '2024-12-20',
+    nextReviewDate: '2025-01-03',
+  },
+  {
+    patientId: 'PT-10002',
+    goals: [
+      {
+        id: 'G-50004',
+        description: 'Weight gain no more than 2 lbs per week',
+        targetDate: '2025-02-15',
+        status: 'active',
+        progress: 'Weight up 1.5 lbs this week — monitoring closely.',
+        createdAt: '2024-10-15T09:00:00Z',
+        updatedAt: '2024-12-19T15:00:00Z',
+      },
+      {
+        id: 'G-50005',
+        description: 'Patient will adhere to 2g sodium diet daily',
+        targetDate: '2025-01-15',
+        status: 'active',
+        progress: 'Patient asking appropriate questions about sodium. Engaged.',
+        createdAt: '2024-10-15T09:00:00Z',
+        updatedAt: '2024-12-19T15:00:00Z',
+      },
+    ],
+    lastReviewDate: '2024-12-19',
+    nextReviewDate: '2025-01-02',
+  },
+  {
+    patientId: 'PT-10003',
+    goals: [
+      {
+        id: 'G-50006',
+        description: 'Zero falls during certification period',
+        targetDate: '2025-03-01',
+        status: 'active',
+        progress: 'No falls reported. Walker use consistent.',
+        createdAt: '2024-09-01T08:00:00Z',
+        updatedAt: '2024-12-18T12:30:00Z',
+      },
+      {
+        id: 'G-50007',
+        description: 'Maintain safe home environment per fall risk checklist',
+        targetDate: '2025-03-01',
+        status: 'active',
+        progress: 'Home safety evaluation completed 12/18 — all clear.',
+        createdAt: '2024-09-01T08:00:00Z',
+        updatedAt: '2024-12-18T12:30:00Z',
+      },
+    ],
+    lastReviewDate: '2024-12-18',
+    nextReviewDate: '2025-01-01',
+  },
+];
+
+/**
+ * ID counters for new records
+ */
+let scheduleCounter = 40010;
+export function generateScheduleId(): string {
+  return `SV-${scheduleCounter++}`;
+}
+
+let goalCounter = 50010;
+export function generateGoalId(): string {
+  return `G-${goalCounter++}`;
+}
 
 /**
  * Convert Patient to PatientSearchResult
