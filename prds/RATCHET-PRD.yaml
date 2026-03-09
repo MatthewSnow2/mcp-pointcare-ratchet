@@ -1,353 +1,1074 @@
 # =============================================================================
 # RATCHET MCP SERVER - Product Requirements Document
 # =============================================================================
-# Status: SKELETON - Production API integration pending vendor documentation
-# Last Updated: 2024-12-22
+# Version: 0.2.0
+# Last Updated: 2026-03-09
+# Status: 14 tools designed (22 clinical operations), 3 implemented
 # =============================================================================
 
 # -----------------------------------------------------------------------------
 # PROJECT METADATA
 # -----------------------------------------------------------------------------
 project:
-  name: "ratchet-mcp"
-  version: "0.1.0"
+  name: "mcp-ratchet-clinical-charting"
+  version: "0.2.0"
   description: |
-    MCP server for PointCare EMR integration. Enables Claude to document
-    patient visits directly into the Electronic Medical Records system,
-    reducing administrative burden for home health nurses.
+    MCP server for clinical charting via Claude. Enables home health nurses
+    to document patient visits using natural language, transforming dictation
+    into structured EMR data. 14 MCP tools covering 22 clinical operations
+    across the full visit lifecycle.
 
-  sdk: "typescript"  # Aligns with Anthropic's reference implementation
+  company: "MeMyselfPlusAI (memyselfplusai.com)"
+  sdk: "typescript"
+  transport: "stdio"
 
   repository:
-    url: "https://github.com/memyselfplusai/ratchet"  # TBD
+    url: "https://github.com/m2ai-mcp-servers/mcp-ratchet-clinical-charting"
     branch: "main"
 
-  sprint:
-    grimlock_handoff: "2024-12-XX"  # TBD - after API docs acquired
-    grimlock_delivery: "2024-12-XX"  # TBD
-    week2_start: "2024-12-XX"        # TBD
-
-  deployment:
-    type: "local"
-    target: "claude-desktop"
+  related:
+    dashboard:
+      url: "https://github.com/m2ai-mcp-servers/ratchet-demo-emr"
+      demo: "https://pointcare-emr-demo.netlify.app"
 
 # -----------------------------------------------------------------------------
-# INTEGRATION TARGET
+# TOOL TIERS
 # -----------------------------------------------------------------------------
-integration:
-  service_name: "PointCare EMR"
-  service_type: "api"
-  service_url: "https://www.pointcare.com"  # Main site - API URL TBD
-
-  api:
-    base_url: "[Pending: Acquire from PointCare]"
-    documentation_url: "[Pending: Need to request]"
-    version: "[Pending: Unknown]"
-
-  auth:
-    type: "[Pending: Likely OAuth2 or API Key]"
-    # Possible options:
-    # - api_key: Simple API key in header
-    # - oauth2: OAuth 2.0 flow
-    # - basic: Basic auth (unlikely for modern EMR)
-
-  rate_limits:
-    requests_per_minute: "[Pending: Unknown]"
-    daily_limit: "[Pending: Unknown]"
-
+# Tier 1 (Core)      — Built and tested. 3 tools, 34 tests passing.
+# Tier 2 (Workflow)   — Visit lifecycle + scheduling. Implementation this week.
+# Tier 3 (Clinical)   — Incremental clinical data capture. Next phase.
+# Tier 4 (Regulatory) — OASIS/compliance. Requires real EMR integration.
 # -----------------------------------------------------------------------------
-# MCP TOOLS - Pending PENDING API DOCUMENTATION
-# -----------------------------------------------------------------------------
+
+# =============================================================================
+# TIER 1: CORE TOOLS (3 tools — IMPLEMENTED)
+# =============================================================================
 tools:
+
+  # ---------------------------------------------------------------------------
+  # 1. search_patient
+  # ---------------------------------------------------------------------------
   - name: "search_patient"
+    tier: 1
+    status: "implemented"
     description: |
-      Search for a patient in the PointCare EMR system.
-      Used to find patient records before creating visit notes.
-    status: "Pending"
-    blocked_reason: "Awaiting PointCare API documentation"
+      Search for a patient in the EMR system by name, ID, or phone number.
+      Returns matching patient records with demographics and status.
+      Use this tool first to find a patient before documenting a visit.
 
     parameters:
       - name: "query"
         type: "string"
         required: true
-        description: "Patient name, ID, or phone number"
-      # Additional parameters TBD based on API
-
-    returns:
-      description: "List of matching patient records"
-      schema: "[Pending: Need API response schema]"
-
-    examples:
-      - input:
-          query: "John Smith"
-        output: "[Pending: Need sample response]"
-
-  - name: "create_visit_note"
-    description: |
-      Create a visit note for a patient in the PointCare EMR.
-      This is the primary tool for documenting home health visits.
-    status: "Pending"
-    blocked_reason: "Awaiting PointCare API documentation"
-
-    parameters:
-      - name: "patientId"
+        description: "Patient name, ID (e.g., PT-10001), or phone number"
+      - name: "searchType"
         type: "string"
-        required: true
-        description: "Patient identifier from search_patient"
-      - name: "note"
+        required: false
+        enum: ["name", "id", "phone", "all"]
+        default: "all"
+        description: "Type of search to perform"
+      - name: "status"
         type: "string"
-        required: true
-        description: "Visit note content"
-      # Additional parameters TBD (visit date, visit type, etc.)
-
-    returns:
-      description: "Confirmation of created visit note"
-      schema: "[Pending: Need API response schema]"
-
-    examples:
-      - input:
-          patientId: "PT-12345"
-          note: "Patient vitals stable. Blood pressure 120/80..."
-        output: "[Pending: Need sample response]"
-
-  - name: "get_patient_history"
-    description: |
-      Retrieve visit history for a patient.
-      Useful for context before creating new visit notes.
-    status: "Pending"
-    blocked_reason: "Awaiting PointCare API documentation"
-
-    parameters:
-      - name: "patientId"
-        type: "string"
-        required: true
-        description: "Patient identifier"
+        required: false
+        enum: ["active", "inactive", "discharged", "pending"]
+        description: "Filter by patient status"
       - name: "limit"
         type: "number"
         required: false
-        description: "Maximum number of records to return"
         default: 10
+        description: "Maximum results to return"
+      - name: "offset"
+        type: "number"
+        required: false
+        default: 0
+        description: "Pagination offset"
 
     returns:
-      description: "List of previous visit notes"
-      schema: "[Pending: Need API response schema]"
+      description: "Paginated list of matching patients"
+      schema:
+        results: "PatientSearchResult[] — id, firstName, lastName, dob, phone, status, primaryDiagnosis"
+        total: "number"
+        limit: "number"
+        offset: "number"
+        hasMore: "boolean"
+
+    examples:
+      - input: { query: "Jane Marple" }
+        output: "1 result — PT-10001, Jane Marple, Active, Type 2 Diabetes"
+      - input: { query: "PT-10002", searchType: "id" }
+        output: "1 result — PT-10002, Hercule Poirot, Active, Heart Failure"
+      - input: { query: "555-0103", searchType: "phone" }
+        output: "1 result — PT-10003, Ariadne Oliver"
+
+  # ---------------------------------------------------------------------------
+  # 2. create_visit_note
+  # ---------------------------------------------------------------------------
+  - name: "create_visit_note"
+    tier: 1
+    status: "implemented"
+    description: |
+      Create a complete visit note for a patient. This is the primary
+      documentation tool — accepts vitals, SOAP notes, interventions,
+      education, and care plan updates in a single call. Use search_patient
+      first to get the patient ID.
+
+      Includes clinical validation: vital sign ranges (BP 50-300/20-200,
+      HR 20-250, temp 90-110°F/32-43°C, O2 50-100%, pain 0-10),
+      date format (YYYY-MM-DD), time format (HH:MM).
+
+    parameters:
+      - name: "patientId"
+        type: "string"
+        required: true
+        description: "Patient ID from search_patient (e.g., PT-10001)"
+      - name: "visitType"
+        type: "string"
+        required: true
+        enum: ["skilled_nursing", "physical_therapy", "occupational_therapy", "speech_therapy", "home_health_aide", "social_work", "initial_assessment", "recertification", "discharge", "other"]
+        description: "Type of visit"
+      - name: "visitDate"
+        type: "string"
+        required: true
+        description: "Date of visit (YYYY-MM-DD)"
+      - name: "timeIn"
+        type: "string"
+        required: true
+        description: "Arrival time (HH:MM, 24-hour)"
+      - name: "timeOut"
+        type: "string"
+        required: true
+        description: "Departure time (HH:MM, 24-hour)"
+      - name: "vitalSigns"
+        type: "object"
+        required: false
+        description: "Vital signs — bloodPressureSystolic, bloodPressureDiastolic, heartRate, respiratoryRate, temperature, temperatureUnit (F/C), oxygenSaturation, weight, weightUnit (lbs/kg), painLevel (0-10)"
+      - name: "subjective"
+        type: "string"
+        required: false
+        description: "Patient's reported symptoms, concerns, and statements (S in SOAP)"
+      - name: "objective"
+        type: "string"
+        required: false
+        description: "Nurse's observations and physical assessment findings (O in SOAP)"
+      - name: "assessment"
+        type: "string"
+        required: false
+        description: "Clinical assessment and interpretation of findings (A in SOAP)"
+      - name: "plan"
+        type: "string"
+        required: false
+        description: "Care plan and next steps (P in SOAP)"
+      - name: "interventions"
+        type: "string[]"
+        required: false
+        description: "List of interventions performed during visit"
+      - name: "patientResponse"
+        type: "string"
+        required: false
+        description: "How patient responded to care/interventions"
+      - name: "education"
+        type: "string[]"
+        required: false
+        description: "Patient education topics covered"
+      - name: "nextVisitDate"
+        type: "string"
+        required: false
+        description: "Scheduled next visit date (YYYY-MM-DD)"
+      - name: "notes"
+        type: "string"
+        required: false
+        description: "Additional notes or comments"
+
+    returns:
+      description: "Confirmation with visit note ID and summary"
+      schema:
+        success: "boolean"
+        visitNoteId: "string"
+        message: "string"
+        visitNote: "VisitNote — full record including calculated duration"
 
     examples:
       - input:
-          patientId: "PT-12345"
-          limit: 5
-        output: "[Pending: Need sample response]"
+          patientId: "PT-10001"
+          visitType: "skilled_nursing"
+          visitDate: "2026-01-02"
+          timeIn: "09:15"
+          timeOut: "10:05"
+          vitalSigns: { bloodPressureSystolic: 138, bloodPressureDiastolic: 82, heartRate: 76, oxygenSaturation: 97 }
+          subjective: "Patient reports worsening tingling in bilateral feet."
+          assessment: "Progressive diabetic peripheral neuropathy."
+          plan: "Notify Dr. Patel. Reinforce daily foot inspections."
+        output: "✅ Visit note VN-30001 created — 50 min skilled nursing visit, vitals recorded"
 
-# -----------------------------------------------------------------------------
-# MCP RESOURCES (Optional)
-# -----------------------------------------------------------------------------
-resources:
-  # TBD - May expose patient data as resources
-  # Example: patient://PT-12345 → patient details
-  status: "DEFERRED"
-  note: "Will evaluate after tools are implemented"
+  # ---------------------------------------------------------------------------
+  # 3. get_patient_history
+  # ---------------------------------------------------------------------------
+  - name: "get_patient_history"
+    tier: 1
+    status: "implemented"
+    description: |
+      Retrieve visit history for a patient. Returns chronological list of
+      previous visits with summaries. Use for clinical context before
+      documenting a new visit.
 
-# -----------------------------------------------------------------------------
-# MCP PROMPTS (Optional)
-# -----------------------------------------------------------------------------
-prompts:
-  - name: "visit_note_template"
-    description: "Standard template for home health visit documentation"
-    status: "PLANNED"
-    template: |
-      # Home Health Visit Note
+    parameters:
+      - name: "patientId"
+        type: "string"
+        required: true
+        description: "Patient ID"
+      - name: "limit"
+        type: "number"
+        required: false
+        default: 10
+        description: "Maximum visits to return"
+      - name: "offset"
+        type: "number"
+        required: false
+        default: 0
+        description: "Pagination offset"
+      - name: "startDate"
+        type: "string"
+        required: false
+        description: "Filter visits after this date (YYYY-MM-DD)"
+      - name: "endDate"
+        type: "string"
+        required: false
+        description: "Filter visits before this date (YYYY-MM-DD)"
+      - name: "visitType"
+        type: "string"
+        required: false
+        enum: ["skilled_nursing", "physical_therapy", "occupational_therapy", "speech_therapy", "home_health_aide", "social_work", "initial_assessment", "recertification", "discharge", "other"]
+        description: "Filter by visit type"
 
-      **Patient:** {{patient_name}}
-      **Date:** {{visit_date}}
-      **Time In/Out:** {{time_in}} - {{time_out}}
+    returns:
+      description: "Paginated visit history with summaries"
+      schema:
+        patientId: "string"
+        patientName: "string"
+        visits: "VisitNoteSummary[] — id, date, type, status, duration, nurse, hasVitals"
+        total: "number"
+        hasMore: "boolean"
 
-      ## Vital Signs
-      - Blood Pressure: {{bp}}
-      - Heart Rate: {{hr}}
-      - Temperature: {{temp}}
-      - O2 Saturation: {{o2sat}}
+    examples:
+      - input: { patientId: "PT-10001" }
+        output: "Jane Marple — 2 visits (most recent: 2024-12-20, skilled nursing, 45 min)"
 
-      ## Assessment
-      {{assessment}}
+# =============================================================================
+# TIER 2: WORKFLOW TOOLS (8 tools — DESIGNED, implementing this week)
+# =============================================================================
 
-      ## Plan
-      {{plan}}
+  # ---------------------------------------------------------------------------
+  # 4. start_visit
+  # ---------------------------------------------------------------------------
+  - name: "start_visit"
+    tier: 2
+    status: "designed"
+    description: |
+      Start a visit session for a patient. Transitions the visit from
+      'scheduled' to 'in_progress'. Creates a visit record that can be
+      incrementally updated via update_visit_note, then finalized with
+      complete_visit.
 
-      ## Next Visit
-      {{next_visit}}
+      This tool is optional — create_visit_note still works standalone
+      for documenting complete visits in a single call.
 
-# -----------------------------------------------------------------------------
-# ACCEPTANCE CRITERIA
-# -----------------------------------------------------------------------------
-acceptance_criteria:
-  functional:
-    - id: "AC-F001"
-      description: "search_patient returns matching patients within 2 seconds"
-      status: "Pending"
+    parameters:
+      - name: "patientId"
+        type: "string"
+        required: true
+        description: "Patient ID"
+      - name: "visitType"
+        type: "string"
+        required: true
+        enum: ["skilled_nursing", "physical_therapy", "occupational_therapy", "speech_therapy", "home_health_aide", "social_work", "initial_assessment", "recertification", "discharge", "other"]
+        description: "Type of visit"
+      - name: "visitDate"
+        type: "string"
+        required: false
+        description: "Date of visit (YYYY-MM-DD). Defaults to today."
+      - name: "timeIn"
+        type: "string"
+        required: false
+        description: "Arrival time (HH:MM). Defaults to current time."
 
-    - id: "AC-F002"
-      description: "create_visit_note successfully creates note in PointCare"
-      status: "Pending"
+    returns:
+      description: "Active visit session with ID"
+      schema:
+        success: "boolean"
+        visitId: "string"
+        status: "'in_progress'"
+        patientId: "string"
+        patientName: "string"
+        visitType: "VisitType"
+        timeIn: "string"
+        message: "string"
 
-    - id: "AC-F003"
-      description: "get_patient_history returns chronological visit list"
-      status: "Pending"
+    examples:
+      - input: { patientId: "PT-10001", visitType: "skilled_nursing" }
+        output: "✅ Visit VN-30010 started for Jane Marple — skilled nursing, in progress"
 
-    - id: "AC-F004"
-      description: "All tools handle authentication errors gracefully"
-      status: "Pending"
+    state_transitions:
+      from: ["scheduled", "none"]
+      to: "in_progress"
 
-    - id: "AC-F005"
-      description: "MCP server starts and responds to tool list request"
-      status: "TESTABLE"
+  # ---------------------------------------------------------------------------
+  # 5. update_visit_note
+  # ---------------------------------------------------------------------------
+  - name: "update_visit_note"
+    tier: 2
+    status: "designed"
+    description: |
+      Incrementally update an in-progress visit note. Merges new data with
+      existing — does not overwrite fields unless explicitly provided.
+      Use after start_visit to add vitals, SOAP sections, interventions,
+      or education as the visit progresses.
 
-  non_functional:
-    - id: "AC-NF001"
-      description: "No PHI logged to console or files"
-      status: "PLANNED"
+    parameters:
+      - name: "visitId"
+        type: "string"
+        required: true
+        description: "Visit ID from start_visit"
+      - name: "vitalSigns"
+        type: "object"
+        required: false
+        description: "Vital signs to add/update"
+      - name: "subjective"
+        type: "string"
+        required: false
+        description: "Patient subjective (replaces if provided)"
+      - name: "objective"
+        type: "string"
+        required: false
+        description: "Nurse objective (replaces if provided)"
+      - name: "assessment"
+        type: "string"
+        required: false
+        description: "Clinical assessment (replaces if provided)"
+      - name: "plan"
+        type: "string"
+        required: false
+        description: "Care plan (replaces if provided)"
+      - name: "interventions"
+        type: "string[]"
+        required: false
+        description: "Interventions to add (appends to existing list)"
+      - name: "education"
+        type: "string[]"
+        required: false
+        description: "Education topics to add (appends to existing list)"
+      - name: "patientResponse"
+        type: "string"
+        required: false
+        description: "Patient response (replaces if provided)"
+      - name: "notes"
+        type: "string"
+        required: false
+        description: "Additional notes (appends)"
 
-    - id: "AC-NF002"
-      description: "API credentials stored securely (env vars only)"
-      status: "PLANNED"
+    returns:
+      description: "Updated visit note with merge confirmation"
+      schema:
+        success: "boolean"
+        visitId: "string"
+        fieldsUpdated: "string[] — list of fields that were changed"
+        message: "string"
 
-    - id: "AC-NF003"
-      description: "Response time < 3 seconds for all operations"
-      status: "Pending"
+    examples:
+      - input:
+          visitId: "VN-30010"
+          vitalSigns: { bloodPressureSystolic: 138, bloodPressureDiastolic: 82, heartRate: 76 }
+        output: "✅ VN-30010 updated — vitals recorded (BP 138/82, HR 76)"
+      - input:
+          visitId: "VN-30010"
+          subjective: "Patient reports tingling in feet."
+          interventions: ["Monofilament sensory testing", "Foot examination"]
+        output: "✅ VN-30010 updated — subjective, interventions (2 added)"
 
-# -----------------------------------------------------------------------------
-# SECURITY REQUIREMENTS
-# -----------------------------------------------------------------------------
+    merge_behavior:
+      strings: "replace — new value overwrites existing"
+      arrays: "append — new items added to existing list"
+      objects: "shallow merge — new keys override, existing keys preserved"
+
+  # ---------------------------------------------------------------------------
+  # 6. complete_visit
+  # ---------------------------------------------------------------------------
+  - name: "complete_visit"
+    tier: 2
+    status: "designed"
+    description: |
+      Finalize an in-progress visit. Sets status to 'completed', records
+      departure time, calculates duration, and syncs to the dashboard
+      via Supabase. The visit note becomes read-only after completion.
+
+    parameters:
+      - name: "visitId"
+        type: "string"
+        required: true
+        description: "Visit ID from start_visit"
+      - name: "timeOut"
+        type: "string"
+        required: false
+        description: "Departure time (HH:MM). Defaults to current time."
+      - name: "nextVisitDate"
+        type: "string"
+        required: false
+        description: "Schedule the next visit (YYYY-MM-DD)"
+      - name: "signOff"
+        type: "boolean"
+        required: false
+        default: true
+        description: "Whether to sign the note (records signedAt/signedBy)"
+
+    returns:
+      description: "Completed visit summary"
+      schema:
+        success: "boolean"
+        visitId: "string"
+        status: "'completed'"
+        duration: "number — visit duration in minutes"
+        timeIn: "string"
+        timeOut: "string"
+        message: "string"
+        syncedToDashboard: "boolean"
+
+    examples:
+      - input: { visitId: "VN-30010", timeOut: "10:05" }
+        output: "✅ VN-30010 completed — 50 min skilled nursing visit, signed, synced to dashboard"
+
+    state_transitions:
+      from: ["in_progress"]
+      to: "completed"
+
+  # ---------------------------------------------------------------------------
+  # 7. cancel_visit
+  # ---------------------------------------------------------------------------
+  - name: "cancel_visit"
+    tier: 2
+    status: "designed"
+    description: |
+      Cancel a scheduled or in-progress visit. Records the cancellation
+      reason for compliance and scheduling purposes.
+
+    parameters:
+      - name: "visitId"
+        type: "string"
+        required: true
+        description: "Visit ID to cancel"
+      - name: "reason"
+        type: "string"
+        required: true
+        enum: ["patient_unavailable", "patient_hospitalized", "nurse_unavailable", "weather", "patient_refused", "other"]
+        description: "Cancellation reason"
+      - name: "notes"
+        type: "string"
+        required: false
+        description: "Additional cancellation details"
+      - name: "rescheduleDate"
+        type: "string"
+        required: false
+        description: "Reschedule to this date (YYYY-MM-DD)"
+
+    returns:
+      description: "Cancellation confirmation"
+      schema:
+        success: "boolean"
+        visitId: "string"
+        status: "'cancelled'"
+        reason: "string"
+        rescheduledTo: "string | null"
+        message: "string"
+
+    examples:
+      - input: { visitId: "VN-30010", reason: "patient_hospitalized", notes: "Admitted to Vanderbilt Medical Center" }
+        output: "✅ VN-30010 cancelled — patient hospitalized"
+
+    state_transitions:
+      from: ["scheduled", "in_progress"]
+      to: "cancelled"
+
+  # ---------------------------------------------------------------------------
+  # 8. get_schedule
+  # ---------------------------------------------------------------------------
+  - name: "get_schedule"
+    tier: 2
+    status: "designed"
+    description: |
+      Get the nurse's patient schedule for a given date. Returns scheduled
+      visits with patient info, visit type, time, and status.
+
+    parameters:
+      - name: "date"
+        type: "string"
+        required: false
+        description: "Date to get schedule for (YYYY-MM-DD). Defaults to today."
+      - name: "nurseId"
+        type: "string"
+        required: false
+        description: "Nurse ID. Defaults to current user."
+      - name: "status"
+        type: "string"
+        required: false
+        enum: ["scheduled", "in_progress", "completed", "cancelled", "all"]
+        default: "all"
+        description: "Filter by visit status"
+
+    returns:
+      description: "Daily schedule with patient summaries"
+      schema:
+        date: "string"
+        nurseName: "string"
+        visits:
+          - visitId: "string"
+            patientId: "string"
+            patientName: "string"
+            scheduledTime: "string"
+            visitType: "VisitType"
+            status: "VisitStatus"
+            priority: "boolean"
+            primaryDiagnosis: "string"
+            address: "string"
+        totalVisits: "number"
+
+    examples:
+      - input: { date: "2026-01-02" }
+        output: "3 visits scheduled — Jane Marple 09:00 (in progress), Hercule Poirot 11:00 (pending), Ariadne Oliver 14:00 (pending)"
+
+  # ---------------------------------------------------------------------------
+  # 9. schedule_next_visit
+  # ---------------------------------------------------------------------------
+  - name: "schedule_next_visit"
+    tier: 2
+    status: "designed"
+    description: |
+      Schedule a follow-up visit for a patient. Creates a scheduled visit
+      entry that will appear in get_schedule results.
+
+    parameters:
+      - name: "patientId"
+        type: "string"
+        required: true
+        description: "Patient ID"
+      - name: "date"
+        type: "string"
+        required: true
+        description: "Visit date (YYYY-MM-DD)"
+      - name: "time"
+        type: "string"
+        required: true
+        description: "Visit time (HH:MM)"
+      - name: "visitType"
+        type: "string"
+        required: true
+        enum: ["skilled_nursing", "physical_therapy", "occupational_therapy", "speech_therapy", "home_health_aide", "social_work", "initial_assessment", "recertification", "discharge", "other"]
+        description: "Type of visit"
+      - name: "notes"
+        type: "string"
+        required: false
+        description: "Scheduling notes (e.g., 'follow up on neuropathy assessment')"
+      - name: "priority"
+        type: "boolean"
+        required: false
+        default: false
+        description: "Mark as priority visit"
+
+    returns:
+      description: "Scheduled visit confirmation"
+      schema:
+        success: "boolean"
+        visitId: "string"
+        patientName: "string"
+        scheduledDate: "string"
+        scheduledTime: "string"
+        message: "string"
+
+    examples:
+      - input: { patientId: "PT-10001", date: "2026-01-05", time: "09:00", visitType: "skilled_nursing", notes: "Reassess bilateral foot sensation" }
+        output: "✅ Visit scheduled — Jane Marple, Jan 5 at 09:00, skilled nursing"
+
+  # ---------------------------------------------------------------------------
+  # 10. manage_care_plan
+  # ---------------------------------------------------------------------------
+  - name: "manage_care_plan"
+    tier: 2
+    status: "designed"
+    description: |
+      Manage a patient's care plan goals. Supports three actions:
+      - 'get' — retrieve current goals and their status
+      - 'add_goal' — add a new care plan goal
+      - 'update_goal' — update goal status (met, in_progress, not_met, discontinued)
+
+    operations_covered: 3
+    operations: ["get_care_plan", "add_care_plan_goal", "update_goal_status"]
+
+    parameters:
+      - name: "patientId"
+        type: "string"
+        required: true
+        description: "Patient ID"
+      - name: "action"
+        type: "string"
+        required: true
+        enum: ["get", "add_goal", "update_goal"]
+        description: "Action to perform"
+      - name: "goal"
+        type: "string"
+        required: false
+        description: "Goal text (required for add_goal)"
+      - name: "goalId"
+        type: "string"
+        required: false
+        description: "Goal ID (required for update_goal)"
+      - name: "status"
+        type: "string"
+        required: false
+        enum: ["in_progress", "met", "not_met", "discontinued"]
+        description: "New goal status (required for update_goal)"
+      - name: "targetDate"
+        type: "string"
+        required: false
+        description: "Target date for goal achievement (YYYY-MM-DD)"
+      - name: "notes"
+        type: "string"
+        required: false
+        description: "Progress notes for the goal"
+
+    returns:
+      description: "Care plan data or confirmation"
+      schema:
+        success: "boolean"
+        patientId: "string"
+        patientName: "string"
+        goals:
+          - goalId: "string"
+            goal: "string"
+            status: "'in_progress' | 'met' | 'not_met' | 'discontinued'"
+            targetDate: "string | null"
+            lastUpdated: "string"
+        message: "string"
+
+    examples:
+      - input: { patientId: "PT-10001", action: "get" }
+        output: "Jane Marple — 4 goals: Blood glucose <150 (in progress), Daily foot inspections (in progress), A1C <7.5% (in progress), BP <140/90 (in progress)"
+      - input: { patientId: "PT-10001", action: "add_goal", goal: "Report tingling changes to nurse within 24 hours", targetDate: "2026-03-31" }
+        output: "✅ Goal added — 'Report tingling changes' target: Mar 31"
+      - input: { patientId: "PT-10001", action: "update_goal", goalId: "G-002", status: "met", notes: "Patient demonstrating daily foot inspections consistently" }
+        output: "✅ Goal G-002 updated — 'Daily foot inspections' → MET"
+
+  # ---------------------------------------------------------------------------
+  # 11. get_care_team
+  # ---------------------------------------------------------------------------
+  - name: "get_care_team"
+    tier: 2
+    status: "designed"
+    description: |
+      Retrieve the care team assigned to a patient. Returns the primary
+      nurse, physician, case manager, and agency information.
+
+    parameters:
+      - name: "patientId"
+        type: "string"
+        required: true
+        description: "Patient ID"
+
+    returns:
+      description: "Patient care team details"
+      schema:
+        patientId: "string"
+        patientName: "string"
+        careTeam:
+          primaryNurse: "string"
+          primaryPhysician: "string"
+          caseManager: "string | null"
+          agency: "string"
+        insurancePayer: "string"
+        admissionDate: "string"
+        status: "string"
+
+    examples:
+      - input: { patientId: "PT-10001" }
+        output: "Jane Marple — Nurse: Sarah Johnson RN, Physician: Dr. Michael Chen, Agency: Nashville Home Health, Medicare"
+
+# =============================================================================
+# TIER 3: CLINICAL TOOLS (2 tools, 6 operations — DESIGNED, next phase)
+# =============================================================================
+
+  # ---------------------------------------------------------------------------
+  # 12. record_clinical_data
+  # ---------------------------------------------------------------------------
+  - name: "record_clinical_data"
+    tier: 3
+    status: "designed"
+    description: |
+      Record specialized clinical assessment data for a patient visit.
+      Composed tool covering 5 assessment types:
+      - 'wound' — wound assessment with location, size, drainage, staging
+      - 'pain' — pain assessment with location, quality, onset, aggravating/alleviating factors
+      - 'fall_risk' — fall risk assessment using Morse Fall Scale factors
+      - 'functional_status' — ADL/IADL functional assessment
+      - 'neurological' — neurological assessment (sensation, motor, cognitive)
+
+      For vital signs, use create_visit_note or update_visit_note instead —
+      vitals are part of the visit documentation, not a separate assessment.
+
+    operations_covered: 5
+    operations: ["record_wound_assessment", "record_pain_assessment", "record_fall_risk", "record_functional_status", "record_neurological"]
+
+    parameters:
+      - name: "patientId"
+        type: "string"
+        required: true
+        description: "Patient ID"
+      - name: "visitId"
+        type: "string"
+        required: false
+        description: "Associate with an in-progress visit (optional)"
+      - name: "assessmentType"
+        type: "string"
+        required: true
+        enum: ["wound", "pain", "fall_risk", "functional_status", "neurological"]
+        description: "Type of clinical assessment"
+      - name: "data"
+        type: "object"
+        required: true
+        description: "Assessment data — schema varies by assessmentType (see below)"
+
+    assessment_schemas:
+      wound:
+        location: "string — body location (e.g., 'right lower leg, anterior')"
+        woundType: "string — surgical, pressure, diabetic, venous, arterial, other"
+        length: "number — cm"
+        width: "number — cm"
+        depth: "number — cm"
+        stage: "string — Stage I, II, III, IV, Unstageable, DTI"
+        drainage: "string — none, serous, sanguineous, serosanguineous, purulent"
+        drainageAmount: "string — none, scant, small, moderate, large"
+        woundBed: "string — granulation, slough, eschar, mixed"
+        periwound: "string — intact, macerated, erythematous, indurated"
+        treatmentApplied: "string — dressing type and care performed"
+        notes: "string"
+
+      pain:
+        location: "string — body location"
+        intensity: "number — 0-10 scale"
+        quality: "string — sharp, dull, burning, aching, throbbing, stabbing"
+        onset: "string — when pain started or changed"
+        duration: "string — constant, intermittent, occasional"
+        aggravatingFactors: "string[] — what makes it worse"
+        alleviatingFactors: "string[] — what makes it better"
+        currentMedication: "string — current pain management"
+        functionalImpact: "string — how pain affects daily activities"
+
+      fall_risk:
+        historyOfFalling: "boolean — fallen in past 3 months"
+        secondaryDiagnosis: "boolean — 2+ medical diagnoses"
+        ambulatoryAid: "string — none, crutches, cane, walker, wheelchair"
+        ivAccess: "boolean — IV or heparin lock"
+        gait: "string — normal, weak, impaired"
+        mentalStatus: "string — oriented, forgetful, confused"
+        morseScore: "number — calculated total (0-125)"
+        riskLevel: "string — low (0-24), moderate (25-50), high (51+)"
+        interventions: "string[] — fall prevention measures in place"
+
+      functional_status:
+        adlScores:
+          bathing: "number — 0 (independent) to 4 (total dependence)"
+          dressing: "number — 0-4"
+          toileting: "number — 0-4"
+          transferring: "number — 0-4"
+          feeding: "number — 0-4"
+          continence: "number — 0-4"
+        iadlScores:
+          telephoneUse: "number — 0-3"
+          shopping: "number — 0-3"
+          mealPreparation: "number — 0-3"
+          housekeeping: "number — 0-3"
+          laundry: "number — 0-3"
+          transportation: "number — 0-3"
+          medicationManagement: "number — 0-3"
+          financialManagement: "number — 0-3"
+        mobilityAids: "string[] — walker, cane, wheelchair, etc."
+        notes: "string"
+
+      neurological:
+        mentalStatus: "string — alert, confused, lethargic, obtunded"
+        orientation: "string — person, place, time, situation (e.g., 'oriented x4')"
+        sensation: "object — { location: string, finding: string }[]"
+        motorFunction: "string — normal, weakness noted, paralysis"
+        cranialNerves: "string — intact, deficits noted"
+        coordination: "string — normal, impaired"
+        notes: "string"
+
+    returns:
+      description: "Assessment confirmation with clinical summary"
+      schema:
+        success: "boolean"
+        assessmentId: "string"
+        assessmentType: "string"
+        patientId: "string"
+        visitId: "string | null"
+        summary: "string — human-readable clinical summary"
+        message: "string"
+
+    examples:
+      - input:
+          patientId: "PT-10001"
+          visitId: "VN-30010"
+          assessmentType: "neurological"
+          data: { mentalStatus: "alert", orientation: "oriented x4", sensation: [{ location: "bilateral plantar surfaces", finding: "diminished 4/10 sites" }] }
+        output: "✅ Neurological assessment recorded — alert, oriented x4, diminished bilateral plantar sensation"
+
+  # ---------------------------------------------------------------------------
+  # 13. reconcile_medications
+  # ---------------------------------------------------------------------------
+  - name: "reconcile_medications"
+    tier: 3
+    status: "designed"
+    description: |
+      Perform medication reconciliation for a patient. Compare current
+      medication list against what the patient reports, flag discrepancies,
+      and document changes.
+
+    parameters:
+      - name: "patientId"
+        type: "string"
+        required: true
+        description: "Patient ID"
+      - name: "visitId"
+        type: "string"
+        required: false
+        description: "Associate with an in-progress visit"
+      - name: "reportedMedications"
+        type: "array"
+        required: true
+        description: "Medications the patient reports taking"
+        items:
+          name: "string — medication name"
+          dosage: "string — dose and unit"
+          frequency: "string — how often"
+          route: "string — PO, SubQ, IM, IV, topical, etc."
+          adherence: "string — taking_as_prescribed, missed_doses, discontinued, new"
+          notes: "string — any patient comments"
+      - name: "changes"
+        type: "array"
+        required: false
+        description: "Medication changes ordered or noted"
+        items:
+          medication: "string"
+          changeType: "string — added, discontinued, dose_changed, frequency_changed"
+          orderedBy: "string — physician who ordered the change"
+          reason: "string"
+
+    returns:
+      description: "Reconciliation summary with discrepancies"
+      schema:
+        success: "boolean"
+        patientId: "string"
+        reconciledCount: "number"
+        discrepancies: "array — medications with adherence issues or changes"
+        message: "string"
+
+    examples:
+      - input:
+          patientId: "PT-10001"
+          reportedMedications:
+            - { name: "Metformin", dosage: "500mg", frequency: "BID", route: "PO", adherence: "taking_as_prescribed" }
+            - { name: "Lisinopril", dosage: "10mg", frequency: "Daily", route: "PO", adherence: "missed_doses", notes: "Forgot twice this week" }
+        output: "✅ Reconciled 2 medications — 1 discrepancy: Lisinopril adherence issue (missed doses)"
+
+# =============================================================================
+# TIER 4: REGULATORY TOOLS (2 tools, 3 operations — DESIGNED, requires EMR)
+# =============================================================================
+
+  # ---------------------------------------------------------------------------
+  # 14. manage_oasis
+  # ---------------------------------------------------------------------------
+  - name: "manage_oasis"
+    tier: 4
+    status: "designed"
+    implementation_note: |
+      OASIS (Outcome and Assessment Information Set) is CMS-mandated for
+      Medicare home health. These operations require real EMR integration
+      to be meaningful — OASIS items map to specific CMS data elements
+      with complex skip patterns and validation rules.
+
+    description: |
+      Manage OASIS assessment items for a patient. Composed tool covering:
+      - 'get_template' — retrieve OASIS template for the assessment type
+      - 'populate' — auto-populate OASIS items from visit documentation
+      - 'validate' — check OASIS completion and flag missing required items
+
+    operations_covered: 3
+    operations: ["get_oasis_template", "populate_oasis_items", "validate_oasis_completion"]
+
+    parameters:
+      - name: "patientId"
+        type: "string"
+        required: true
+        description: "Patient ID"
+      - name: "action"
+        type: "string"
+        required: true
+        enum: ["get_template", "populate", "validate"]
+        description: "OASIS action to perform"
+      - name: "assessmentType"
+        type: "string"
+        required: true
+        enum: ["SOC", "ROC", "Recertification", "Other_Follow_Up", "Transfer", "Discharge"]
+        description: "OASIS assessment occasion (SOC = Start of Care, ROC = Resumption of Care)"
+      - name: "visitId"
+        type: "string"
+        required: false
+        description: "Visit to source data from (for populate action)"
+
+    returns:
+      description: "OASIS template, populated items, or validation results"
+      schema:
+        success: "boolean"
+        action: "string"
+        assessmentType: "string"
+        items: "OasisItem[] — code, description, value, status"
+        completionPercent: "number — for validate action"
+        missingRequired: "string[] — missing required items"
+        message: "string"
+
+    examples:
+      - input: { patientId: "PT-10001", action: "validate", assessmentType: "Other_Follow_Up" }
+        output: "OASIS validation — 78% complete, 5 required items missing: M1033, M1800, M1810, M1820, M1830"
+
+# =============================================================================
+# TOOL SUMMARY
+# =============================================================================
+tool_summary:
+  total_tools: 14
+  total_operations: 22
+  tiers:
+    - tier: 1
+      name: "Core"
+      status: "Implemented"
+      tools: 3
+      operations: 3
+      description: "Patient search, visit documentation, history retrieval"
+
+    - tier: 2
+      name: "Workflow"
+      status: "Designed → implementing this week"
+      tools: 8
+      operations: 10
+      description: "Visit lifecycle, scheduling, care planning, care team"
+
+    - tier: 3
+      name: "Clinical"
+      status: "Designed"
+      tools: 2
+      operations: 6
+      description: "Specialized assessments (wound, pain, fall risk, functional, neuro) and medication reconciliation"
+
+    - tier: 4
+      name: "Regulatory"
+      status: "Designed (requires EMR integration)"
+      tools: 1
+      operations: 3
+      description: "OASIS CMS-mandated assessment management"
+
+  operations_by_group:
+    patient_lookup: ["search_patient", "get_patient_history", "get_care_team"]
+    visit_lifecycle: ["start_visit", "create_visit_note", "update_visit_note", "complete_visit", "cancel_visit"]
+    clinical_assessment: ["record_wound_assessment", "record_pain_assessment", "record_fall_risk", "record_functional_status", "record_neurological"]
+    medication: ["reconcile_medications"]
+    care_planning: ["get_care_plan", "add_care_plan_goal", "update_goal_status"]
+    scheduling: ["get_schedule", "schedule_next_visit"]
+    regulatory: ["get_oasis_template", "populate_oasis_items", "validate_oasis_completion"]
+
+# =============================================================================
+# INTEGRATION TARGET
+# =============================================================================
+integration:
+  service_name: "EMR System (target: Axxess)"
+  service_type: "api"
+  current_mode: "mock"
+
+  api:
+    base_url: "Pending vendor API access"
+    documentation_url: "Pending"
+    version: "Pending"
+
+  auth:
+    type: "Pending — likely OAuth2 or API Key"
+
+  notes: |
+    Mock mode provides full development and demo experience without EMR API.
+    All tools return realistic responses using synthetic patient data
+    (Agatha Christie characters). Production integration requires vendor
+    API documentation and credentials.
+
+# =============================================================================
+# SECURITY
+# =============================================================================
 security:
-  data_sensitivity: "HIGH"  # PHI/Healthcare data
+  data_sensitivity: "HIGH — PHI/Healthcare data"
+
+  phi_handling:
+    logging: "All PHI redacted from logs (14 sanitization tests)"
+    message_sanitization: "Patient IDs redacted from log messages"
+    field_redaction: "name, phone, email, address, dob, ssn, diagnosis, medication, notes"
+    audit_trail: "Operations logged with success/failure and duration, no PHI"
+
   compliance:
-    - "HIPAA considerations (handled by organization)"
+    hipaa: "In progress — PHI-safe logging complete, RLS and BAA pending"
+    security_doc: "SECURITY.md in repository"
 
   credential_handling:
     storage: "environment_variables"
-    rotation: "manual"  # TBD based on API auth type
+    documented_in: "server.json (MCP Registry spec)"
 
-  logging:
-    - "No PHI in logs"
-    - "Audit trail for all EMR operations"
-    - "Error logging without sensitive data"
+# =============================================================================
+# ACCEPTANCE CRITERIA
+# =============================================================================
+acceptance_criteria:
+  tier_1:
+    - id: "AC-T1-001"
+      description: "search_patient returns matching patients within 2 seconds"
+      status: "passing"
+    - id: "AC-T1-002"
+      description: "create_visit_note validates clinical ranges and creates note"
+      status: "passing"
+    - id: "AC-T1-003"
+      description: "get_patient_history returns chronological visit list"
+      status: "passing"
+    - id: "AC-T1-004"
+      description: "No PHI appears in any log output (14 sanitization tests)"
+      status: "passing"
 
-  notes: |
-    HIPAA compliance infrastructure is the responsibility of the
-    deploying organization. This MCP server handles credentials
-    securely but does not implement full HIPAA compliance.
+  tier_2:
+    - id: "AC-T2-001"
+      description: "start_visit creates session, transitions to in_progress"
+      status: "designed"
+    - id: "AC-T2-002"
+      description: "update_visit_note merges data into in-progress visit"
+      status: "designed"
+    - id: "AC-T2-003"
+      description: "complete_visit finalizes visit and syncs to dashboard"
+      status: "designed"
+    - id: "AC-T2-004"
+      description: "get_schedule returns daily patient schedule"
+      status: "designed"
+    - id: "AC-T2-005"
+      description: "manage_care_plan supports get/add_goal/update_goal"
+      status: "designed"
+    - id: "AC-T2-006"
+      description: "create_visit_note still works standalone (backward-compatible)"
+      status: "designed"
 
-# -----------------------------------------------------------------------------
-# TESTING REQUIREMENTS
-# -----------------------------------------------------------------------------
-testing:
-  unit_tests:
-    - description: "Tool parameter validation"
-      status: "PLANNED"
-    - description: "Response formatting"
-      status: "PLANNED"
-    - description: "Error handling"
-      status: "PLANNED"
-
-  integration_tests:
-    - description: "PointCare API connectivity"
-      status: "Pending"
-      blocked_reason: "Requires sandbox credentials"
-    - description: "Full tool execution flow"
-      status: "Pending"
-
-  manual_tests:
-    - description: "Claude Desktop integration"
-      status: "PLANNED"
-    - description: "n8n workflow integration"
-      status: "PLANNED"
-
-# -----------------------------------------------------------------------------
-# GRIMLOCK HANDOFF CHECKLIST
-# -----------------------------------------------------------------------------
-grimlock_handoff:
-  required_inputs:
-    - item: "This completed PRD"
-      status: "PENDING"
-      notes: "Skeleton complete, tools blocked"
-
-    - item: "PointCare API documentation"
-      status: "Pending"
-      notes: "Must acquire from PointCare"
-
-    - item: "Sample API responses"
-      status: "Pending"
-      notes: "Need for test fixtures"
-
-    - item: "Test/sandbox credentials"
-      status: "Pending"
-      notes: "Required for integration tests"
-
-    - item: "Authentication method details"
-      status: "Pending"
-      notes: "OAuth2, API Key, or other"
-
-  api_documentation:
-    available: false
-    location: "[Pending]"
-    notes: "Need to contact PointCare for API access"
-
-  test_credentials:
-    available: false
-    sandbox_url: "[Pending]"
-    notes: "Need sandbox environment"
-
-# -----------------------------------------------------------------------------
-# WEEK 2 REFINEMENT CHECKLIST
-# -----------------------------------------------------------------------------
-week2_refinement:
-  security_review:
-    - "Verify no PHI in logs"
-    - "Review credential handling"
-    - "Audit API request patterns"
-
-  integration_testing:
-    - "Test with real PointCare sandbox"
-    - "Verify error handling"
-    - "Test rate limit behavior"
-
-  documentation:
-    - "Update README with real configuration"
-    - "Document error codes"
-    - "Add troubleshooting guide"
-
-  deployment:
-    - "Claude Desktop integration test"
-    - "n8n workflow update (M2AI NurseCall)"
-    - "Production credential setup"
-
-# -----------------------------------------------------------------------------
+# =============================================================================
 # SUCCESS METRICS
-# -----------------------------------------------------------------------------
+# =============================================================================
 success_metrics:
   - metric: "Time to document visit"
-    baseline: "15+ minutes (manual entry)"
-    target: "< 2 minutes (via Claude)"
-    status: "Pending"
-
+    baseline: "15-30 minutes (manual EMR entry)"
+    target: "< 2 minutes (via Claude + Ratchet)"
   - metric: "Documentation completeness"
-    baseline: "Variable"
-    target: "100% required fields"
-    status: "Pending"
-
-  - metric: "Nurse satisfaction"
-    baseline: "N/A"
-    target: "Positive feedback from Stacey"
-    status: "PENDING"
-
-# -----------------------------------------------------------------------------
-# RELATED PROJECTS
-# -----------------------------------------------------------------------------
-related_projects:
-  grimlock:
-    description: "Autonomous MCP Server Factory that will build Ratchet"
-    repository: "/home/ubuntu/projects/grimlock"
-
-  m2ai_nursecall:
-    description: "n8n workflow that will integrate with Ratchet"
-    workflow_id: "3i0JkX1GdDXnTQbx"
-    integration_point: "Replace email output with EMR entry"
+    baseline: "Variable — nurses skip optional fields under time pressure"
+    target: "100% required fields, 80%+ optional fields via natural language"
+  - metric: "Tool count"
+    current: "3 implemented, 14 designed (22 operations)"
+    target: "14 implemented (all tiers)"

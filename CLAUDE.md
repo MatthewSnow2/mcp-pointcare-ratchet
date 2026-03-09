@@ -56,15 +56,28 @@ ratchet/
 └── .env.example           # Required environment variables
 ```
 
-## MCP Tools (Planned)
+## MCP Tools
 
-| Tool | Status | Description |
-|------|--------|-------------|
-| `search_patient` | Working (Mock) | Find patient by name/ID/phone |
-| `create_visit_note` | Working (Mock) | Document a patient visit |
-| `get_patient_history` | Working (Mock) | Retrieve patient visit history |
+14 tools covering 22 clinical operations. Full specs in `prds/RATCHET-PRD.yaml`.
 
-**Status**: Core tools working in mock mode. Production EMR API integration pending vendor API access.
+| Tool | Tier | Status | Description |
+|------|------|--------|-------------|
+| `search_patient` | Core | ✅ Mock | Find patient by name/ID/phone |
+| `create_visit_note` | Core | ✅ Mock | Document a full patient visit |
+| `get_patient_history` | Core | ✅ Mock | Retrieve patient visit history |
+| `get_care_team` | Workflow | Planned | Patient care team lookup |
+| `get_schedule` | Workflow | Planned | Query nurse/patient schedules |
+| `start_visit` | Workflow | Planned | Transition visit to in_progress |
+| `update_visit_note` | Workflow | Planned | Incremental visit note updates |
+| `complete_visit` | Workflow | Planned | Validate and finalize visit |
+| `cancel_visit` | Workflow | Planned | Cancel visit with reason |
+| `schedule_next_visit` | Workflow | Planned | Create follow-up visit |
+| `manage_care_plan` | Workflow | Planned | Get/add/update care plan goals |
+| `record_clinical_data` | Clinical | Designed | Wound, pain, fall risk, functional, neuro assessments |
+| `reconcile_medications` | Clinical | Designed | Medication reconciliation |
+| `manage_oasis` | Regulatory | Designed | OASIS template/populate/validate |
+
+**Status**: 3 core tools working in mock mode. 8 workflow tools implementing this week. See `BLUEPRINT.md` for roadmap.
 
 ## Environment Variables
 
@@ -77,8 +90,10 @@ POINTCARE_CLIENT_SECRET=  # OAuth client secret (if applicable)
 
 ## Current Status
 
-**Phase**: Mock Mode Complete — Ready for Claude Desktop Testing
-**Next milestone**: Production EMR API integration (pending vendor API access)
+**Phase**: Marketplace Submission — Tool Suite Expansion
+**Branch**: `polish/marketplace-readiness`
+**Tests**: 34 passing (Jest)
+**Next milestone**: 8 Tier 2 workflow tools (mock mode)
 
 ## Related Projects
 
