@@ -38,46 +38,63 @@ npm run lint         # Run ESLint
 ```
 ratchet/
 ├── src/
-│   ├── index.ts           # MCP server entry point
-│   ├── tools/             # Tool implementations
+│   ├── index.ts              # MCP server entry point
+│   ├── config.ts             # Environment + mode configuration
+│   ├── tools/                # MCP tool definitions + handlers
 │   │   ├── search-patient.ts
 │   │   ├── create-visit-note.ts
-│   │   └── get-patient-history.ts
-│   ├── resources/         # Resource handlers (if any)
-│   └── prompts/           # Prompt templates (if any)
+│   │   ├── get-patient-history.ts
+│   │   ├── get-care-team.ts
+│   │   ├── get-schedule.ts
+│   │   ├── start-visit.ts
+│   │   ├── update-visit-note.ts
+│   │   ├── complete-visit.ts
+│   │   ├── cancel-visit.ts
+│   │   ├── schedule-next-visit.ts
+│   │   └── manage-care-plan.ts
+│   ├── services/
+│   │   ├── patient-service.ts
+│   │   ├── mock-data.ts
+│   │   ├── visit-state.ts
+│   │   └── supabase-service.ts
+│   ├── types/
+│   │   └── index.ts
+│   └── utils/
+│       ├── logger.ts
+│       └── errors.ts
 ├── tests/
-│   └── *.test.ts          # Jest test suite
+│   └── *.test.ts             # Jest test suite (76 tests)
 ├── prds/
-│   └── RATCHET-PRD.yaml   # MCP specification
+│   └── RATCHET-PRD.yaml      # MCP specification
 ├── docs/
 │   └── API_REQUIREMENTS.md
 ├── package.json
 ├── tsconfig.json
-└── .env.example           # Required environment variables
+└── .env.example
 ```
 
 ## MCP Tools
 
-14 tools covering 22 clinical operations. Full specs in `prds/RATCHET-PRD.yaml`.
+14 tools covering 22 clinical operations (11 implemented, 3 designed). Full specs in `prds/RATCHET-PRD.yaml`.
 
 | Tool | Tier | Status | Description |
 |------|------|--------|-------------|
 | `search_patient` | Core | ✅ Mock | Find patient by name/ID/phone |
 | `create_visit_note` | Core | ✅ Mock | Document a full patient visit |
 | `get_patient_history` | Core | ✅ Mock | Retrieve patient visit history |
-| `get_care_team` | Workflow | Planned | Patient care team lookup |
-| `get_schedule` | Workflow | Planned | Query nurse/patient schedules |
-| `start_visit` | Workflow | Planned | Transition visit to in_progress |
-| `update_visit_note` | Workflow | Planned | Incremental visit note updates |
-| `complete_visit` | Workflow | Planned | Validate and finalize visit |
-| `cancel_visit` | Workflow | Planned | Cancel visit with reason |
-| `schedule_next_visit` | Workflow | Planned | Create follow-up visit |
-| `manage_care_plan` | Workflow | Planned | Get/add/update care plan goals |
+| `get_care_team` | Workflow | ✅ Mock | Patient care team lookup |
+| `get_schedule` | Workflow | ✅ Mock | Query nurse/patient schedules |
+| `start_visit` | Workflow | ✅ Mock | Transition visit to in_progress |
+| `update_visit_note` | Workflow | ✅ Mock | Incremental visit note updates |
+| `complete_visit` | Workflow | ✅ Mock | Validate and finalize visit |
+| `cancel_visit` | Workflow | ✅ Mock | Cancel visit with reason |
+| `schedule_next_visit` | Workflow | ✅ Mock | Create follow-up visit |
+| `manage_care_plan` | Workflow | ✅ Mock | Get/add/update care plan goals |
 | `record_clinical_data` | Clinical | Designed | Wound, pain, fall risk, functional, neuro assessments |
 | `reconcile_medications` | Clinical | Designed | Medication reconciliation |
 | `manage_oasis` | Regulatory | Designed | OASIS template/populate/validate |
 
-**Status**: 3 core tools working in mock mode. 8 workflow tools implementing this week. See `BLUEPRINT.md` for roadmap.
+**Status**: 11 tools working in mock mode (3 core + 8 workflow). 3 remaining tools (clinical + regulatory) require real EMR data. See `BLUEPRINT.md` for roadmap.
 
 ## Environment Variables
 
@@ -92,8 +109,8 @@ POINTCARE_CLIENT_SECRET=  # OAuth client secret (if applicable)
 
 **Phase**: Marketplace Submission — Tool Suite Expansion
 **Branch**: `polish/marketplace-readiness`
-**Tests**: 34 passing (Jest)
-**Next milestone**: 8 Tier 2 workflow tools (mock mode)
+**Tests**: 76 passing (Jest)
+**Next milestone**: Tier 3 clinical tools (record_clinical_data, reconcile_medications)
 
 ## Related Projects
 

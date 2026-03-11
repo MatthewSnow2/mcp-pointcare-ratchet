@@ -20,7 +20,7 @@ export const searchPatientTool = {
 Returns matching patient records with basic information. Use this tool to find patients before creating visit notes or retrieving history.
 
 Examples:
-- Search by name: "Eleanor Thompson"
+- Search by name: "Jane Marple"
 - Search by ID: "PT-10001"
 - Search by phone: "555-0101"`,
   inputSchema: {

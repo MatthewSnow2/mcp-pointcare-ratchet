@@ -3,7 +3,7 @@
 # =============================================================================
 # Version: 0.2.0
 # Last Updated: 2026-03-09
-# Status: 14 tools designed (22 clinical operations), 3 implemented
+# Status: 14 tools designed (22 clinical operations), 11 implemented
 # =============================================================================
 
 # -----------------------------------------------------------------------------
@@ -34,8 +34,8 @@ project:
 # -----------------------------------------------------------------------------
 # TOOL TIERS
 # -----------------------------------------------------------------------------
-# Tier 1 (Core)      — Built and tested. 3 tools, 34 tests passing.
-# Tier 2 (Workflow)   — Visit lifecycle + scheduling. Implementation this week.
+# Tier 1 (Core)      — Built and tested. 3 tools, 34 tests.
+# Tier 2 (Workflow)   — Built and tested. 8 tools, 42 tests. Total: 76 tests.
 # Tier 3 (Clinical)   — Incremental clinical data capture. Next phase.
 # Tier 4 (Regulatory) — OASIS/compliance. Requires real EMR integration.
 # -----------------------------------------------------------------------------
@@ -254,7 +254,7 @@ tools:
         output: "Jane Marple — 2 visits (most recent: 2024-12-20, skilled nursing, 45 min)"
 
 # =============================================================================
-# TIER 2: WORKFLOW TOOLS (8 tools — DESIGNED, implementing this week)
+# TIER 2: WORKFLOW TOOLS (8 tools — IMPLEMENTED, 42 tests passing)
 # =============================================================================
 
   # ---------------------------------------------------------------------------
@@ -262,7 +262,7 @@ tools:
   # ---------------------------------------------------------------------------
   - name: "start_visit"
     tier: 2
-    status: "designed"
+    status: "implemented"
     description: |
       Start a visit session for a patient. Transitions the visit from
       'scheduled' to 'in_progress'. Creates a visit record that can be
@@ -316,7 +316,7 @@ tools:
   # ---------------------------------------------------------------------------
   - name: "update_visit_note"
     tier: 2
-    status: "designed"
+    status: "implemented"
     description: |
       Incrementally update an in-progress visit note. Merges new data with
       existing — does not overwrite fields unless explicitly provided.
@@ -394,7 +394,7 @@ tools:
   # ---------------------------------------------------------------------------
   - name: "complete_visit"
     tier: 2
-    status: "designed"
+    status: "implemented"
     description: |
       Finalize an in-progress visit. Sets status to 'completed', records
       departure time, calculates duration, and syncs to the dashboard
@@ -444,7 +444,7 @@ tools:
   # ---------------------------------------------------------------------------
   - name: "cancel_visit"
     tier: 2
-    status: "designed"
+    status: "implemented"
     description: |
       Cancel a scheduled or in-progress visit. Records the cancellation
       reason for compliance and scheduling purposes.
@@ -491,7 +491,7 @@ tools:
   # ---------------------------------------------------------------------------
   - name: "get_schedule"
     tier: 2
-    status: "designed"
+    status: "implemented"
     description: |
       Get the nurse's patient schedule for a given date. Returns scheduled
       visits with patient info, visit type, time, and status.
@@ -538,7 +538,7 @@ tools:
   # ---------------------------------------------------------------------------
   - name: "schedule_next_visit"
     tier: 2
-    status: "designed"
+    status: "implemented"
     description: |
       Schedule a follow-up visit for a patient. Creates a scheduled visit
       entry that will appear in get_schedule results.
@@ -590,7 +590,7 @@ tools:
   # ---------------------------------------------------------------------------
   - name: "manage_care_plan"
     tier: 2
-    status: "designed"
+    status: "implemented"
     description: |
       Manage a patient's care plan goals. Supports three actions:
       - 'get' — retrieve current goals and their status
@@ -659,7 +659,7 @@ tools:
   # ---------------------------------------------------------------------------
   - name: "get_care_team"
     tier: 2
-    status: "designed"
+    status: "implemented"
     description: |
       Retrieve the care team assigned to a patient. Returns the primary
       nurse, physician, case manager, and agency information.
@@ -951,7 +951,7 @@ tool_summary:
 
     - tier: 2
       name: "Workflow"
-      status: "Designed → implementing this week"
+      status: "Implemented — 42 tests passing"
       tools: 8
       operations: 10
       description: "Visit lifecycle, scheduling, care planning, care team"
@@ -1042,22 +1042,22 @@ acceptance_criteria:
   tier_2:
     - id: "AC-T2-001"
       description: "start_visit creates session, transitions to in_progress"
-      status: "designed"
+      status: "passing"
     - id: "AC-T2-002"
       description: "update_visit_note merges data into in-progress visit"
-      status: "designed"
+      status: "passing"
     - id: "AC-T2-003"
       description: "complete_visit finalizes visit and syncs to dashboard"
-      status: "designed"
+      status: "passing"
     - id: "AC-T2-004"
       description: "get_schedule returns daily patient schedule"
-      status: "designed"
+      status: "passing"
     - id: "AC-T2-005"
       description: "manage_care_plan supports get/add_goal/update_goal"
-      status: "designed"
+      status: "passing"
     - id: "AC-T2-006"
       description: "create_visit_note still works standalone (backward-compatible)"
-      status: "designed"
+      status: "passing"
 
 # =============================================================================
 # SUCCESS METRICS
@@ -1070,5 +1070,5 @@ success_metrics:
     baseline: "Variable — nurses skip optional fields under time pressure"
     target: "100% required fields, 80%+ optional fields via natural language"
   - metric: "Tool count"
-    current: "3 implemented, 14 designed (22 operations)"
+    current: "11 implemented, 3 designed (22 operations)"
     target: "14 implemented (all tiers)"

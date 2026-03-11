@@ -1,27 +1,31 @@
-# Ratchet — Clinical Charting MCP Server
+# ChartingRelief — AI Clinical Documentation for Home Health
 
-**Voice-to-structured-data for home health nursing.** Ratchet is an MCP server that enables Claude to document patient visits directly into Electronic Medical Records, eliminating hours of manual data entry for home health nurses.
+**Charting relief for nurses, powered by Claude.** ChartingRelief eliminates 80-85% of post-visit documentation time for home health nurses by transforming natural-language visit dictation into structured EMR records.
 
 > Built by [MeMyselfPlusAI](https://memyselfplusai.com) — an RN co-founder with AccentCare field experience + an engineer building at the intersection of AI and healthcare.
 
 ## The Problem
 
-Home health nurses spend **35-45% of their workday** on documentation — filling out vitals, SOAP notes, care plans, and education checklists in clunky EMR systems. That's time taken away from patient care.
+Home health nurses see 5-7 patients per day, then spend 1-2 hours every evening manually entering vitals, SOAP notes, care plans, and education checklists into EMR systems. That documentation burden drives 50%+ annual nurse turnover and forces agencies to reject 60-70% of patient referrals due to staffing shortages.
 
-## How Ratchet Works
+## How It Works
 
 ```
-Nurse dictates visit notes in natural language
+Nurse describes visit in natural language
         │
         ▼
-Claude Desktop + Ratchet MCP
-  (voice → structured clinical data)
+Claude + Vivian (AI clinical assistant)
+  uses Ratchet MCP tools to structure data
         │
         ▼
 EMR System (via API) + Live Dashboard
 ```
 
-Ratchet gives Claude three MCP tools that map natural language to structured clinical documentation:
+**Vivian** is the AI clinical documentation assistant — named after [Vivian Bullwinkel](https://en.wikipedia.org/wiki/Vivian_Bullwinkel), the Australian military nurse who survived the Bangka Island massacre in WWII and returned to nursing. Vivian guides nurses through visit documentation using qualifying questions, then structures their natural-language responses into validated clinical data.
+
+**Ratchet** is the MCP server that gives Claude access to 11 clinical documentation tools:
+
+### Core Tools (Tier 1)
 
 | Tool | What It Does |
 |------|-------------|
@@ -29,7 +33,26 @@ Ratchet gives Claude three MCP tools that map natural language to structured cli
 | `create_visit_note` | Document a full visit — vitals, SOAP notes, interventions, education |
 | `get_patient_history` | Retrieve previous visits for clinical context |
 
-A nurse says *"Jane Marple, BP 138/82, heart rate 76, O2 sat 97. Assessed bilateral feet — diminished sensation at 4 of 10 sites. Educated on daily foot inspection with mirror technique."* — and Ratchet structures it into validated clinical data with ICD-10-aware fields.
+### Workflow Tools (Tier 2)
+
+| Tool | What It Does |
+|------|-------------|
+| `get_care_team` | Look up care team for a patient |
+| `get_schedule` | Query schedule by nurse, date range, or patient |
+| `start_visit` | Transition visit from scheduled to in-progress |
+| `update_visit_note` | Incrementally update an in-progress visit note |
+| `complete_visit` | Validate and finalize a visit |
+| `cancel_visit` | Cancel a visit with required reason |
+| `schedule_next_visit` | Create follow-up visits from completed visit context |
+| `manage_care_plan` | Get, add, or update care plan goals |
+
+### Planned Tools (Tier 3-4)
+
+| Tool | Status | What It Does |
+|------|--------|-------------|
+| `record_clinical_data` | Designed | Wound, pain, fall risk, functional, and neurological assessments |
+| `reconcile_medications` | Designed | Full medication reconciliation with status tracking |
+| `manage_oasis` | Designed | OASIS-E1 template population and validation for CMS compliance |
 
 ## Screenshots
 
@@ -68,12 +91,12 @@ git clone https://github.com/m2ai-mcp-servers/mcp-ratchet-clinical-charting.git
 cd mcp-ratchet-clinical-charting
 npm install
 npm run build
-npm test     # 34 tests passing
+npm test     # 76 tests passing
 ```
 
 ## PHI-Safe Engineering
 
-Ratchet is built for healthcare from day one — not retrofitted:
+Built for healthcare from day one — not retrofitted:
 
 - **Log sanitization** — Patient IDs, names, diagnoses, medications, and notes are automatically redacted from all log output
 - **Field-level redaction** — Sensitive fields are replaced with `[REDACTED]` before any data reaches stderr
@@ -84,11 +107,11 @@ See [SECURITY.md](SECURITY.md) for the full security policy and HIPAA compliance
 
 ## Demo Mode
 
-Ratchet runs in **mock mode** by default — no API keys needed. Mock mode uses synthetic patient data from Agatha Christie characters (clearly fictional):
+Runs in **mock mode** by default — no API keys needed. Mock mode uses synthetic patient data from Agatha Christie characters (clearly fictional):
 
 | ID | Name | Status | Primary Diagnosis |
 |----|------|--------|-------------------|
-| PT-10001 | Jane Marple | Active | Type 2 Diabetes, CHF |
+| PT-10001 | Jane Marple | Active | Type 2 Diabetes, Hypertension, CHF |
 | PT-10002 | Hercule Poirot | Active | Heart Failure, AFib, CKD Stage 3 |
 | PT-10003 | Ariadne Oliver | Active | Parkinson's Disease |
 | PT-10004 | Arthur Hastings | Active | Post-stroke rehab |
@@ -100,13 +123,20 @@ Ratchet runs in **mock mode** by default — no API keys needed. Mock mode uses 
 You: "Search for patient Jane Marple"
 Claude: Found 1 patient — Jane Marple (PT-10001), Active, Type 2 Diabetes
 
-You: "Create a visit note for PT-10001. BP 138/82, HR 76, O2 97%.
-      Subjective: patient reports tingling in feet. Educated on foot care."
-Claude: ✅ Visit note VN-30001 created — 45 min skilled nursing visit
-        Vitals recorded, SOAP documented, education logged.
+You: "Start a visit for PT-10001"
+Claude: ✅ Visit SV-40001 started — Jane Marple, skilled nursing, in progress
 
-You: "Get visit history for PT-10001"
-Claude: 2 previous visits found (most recent: 2024-12-20)
+You: "Update the visit. BP 138/82, HR 72, temp 98.4, O2 96%. Weight 165.
+      Subjective: patient feeling well, blood sugars stable.
+      Assessment: CHF stable, diabetes well controlled, BP slightly elevated.
+      Plan: continue current meds, monitor BP, follow up in 3 days."
+Claude: ✅ Visit note updated — vitals, SOAP, and plan recorded
+
+You: "Complete the visit"
+Claude: ✅ Visit completed — 45 min skilled nursing visit finalized
+
+You: "Schedule a follow-up in 3 days"
+Claude: ✅ Follow-up scheduled — Dec 23 at 09:00, skilled nursing
 ```
 
 ## Configuration
@@ -131,10 +161,19 @@ src/
 ├── tools/                # MCP tool definitions + handlers
 │   ├── search-patient.ts
 │   ├── create-visit-note.ts
-│   └── get-patient-history.ts
+│   ├── get-patient-history.ts
+│   ├── get-care-team.ts
+│   ├── get-schedule.ts
+│   ├── start-visit.ts
+│   ├── update-visit-note.ts
+│   ├── complete-visit.ts
+│   ├── cancel-visit.ts
+│   ├── schedule-next-visit.ts
+│   └── manage-care-plan.ts
 ├── services/             # Business logic + data layer
 │   ├── patient-service.ts
 │   ├── mock-data.ts
+│   ├── visit-state.ts    # Visit lifecycle state machine
 │   └── supabase-service.ts
 ├── types/                # TypeScript interfaces (Patient, Visit, VitalSigns)
 └── utils/
@@ -146,14 +185,18 @@ src/
 
 ```bash
 npm run dev          # Watch mode (tsx)
-npm test             # Jest (34 tests)
+npm test             # Jest (76 tests)
 npm test -- --coverage
 npm run build        # TypeScript → dist/
 ```
 
+## Origin
+
+ChartingRelief started as a multi-service voice workflow — Twilio SMS triggered a timer, VAPI voice agent called the nurse for qualifying questions, n8n processed the responses, and email delivered the recap. Four services to do what MCP now enables natively within the Claude ecosystem. The rebuild eliminated all middleware.
+
 ## Related Projects
 
-- **[Ratchet EMR Dashboard](https://github.com/m2ai-mcp-servers/ratchet-demo-emr)** — React dashboard displaying visit data populated by this MCP server
+- **[ChartingRelief EMR Dashboard](https://github.com/m2ai-mcp-servers/ratchet-demo-emr)** — React dashboard displaying visit data populated by this MCP server
 - **[Live Demo](https://pointcare-emr-demo.netlify.app)** — Deployed dashboard with synthetic patient data
 
 ## License

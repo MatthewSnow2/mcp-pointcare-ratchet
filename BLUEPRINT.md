@@ -26,7 +26,7 @@ Phase tracking document for Ratchet MCP server development.
 | `create_visit_note` | Full visit documentation with vitals, SOAP, interventions | 10 |
 | `get_patient_history` | Visit history with date filtering and summary mode | 14 |
 
-### Tier 2: Workflow (8 tools) — THIS WEEK
+### Tier 2: Workflow (8 tools) — IMPLEMENTED
 
 | Tool | Operations | Dependency |
 |------|-----------|------------|
