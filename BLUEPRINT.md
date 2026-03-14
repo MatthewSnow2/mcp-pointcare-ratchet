@@ -4,13 +4,13 @@ Phase tracking document for Ratchet MCP server development.
 
 ## Current Status
 
-**Phase:** Marketplace Submission — Tool Suite Expansion
+**Phase:** ChartingRelief Rebrand Complete / Marketplace Ready
 **Branch:** `polish/marketplace-readiness`
-**Last Updated:** 2026-03-09
+**Last Updated:** 2026-03-14
 
-**What's built:** 3 core MCP tools (search, create visit, get history), PHI-safe logging, clinical validation, Supabase dashboard sync, 34 tests passing.
+**What's built:** 11 MCP tools (3 core + 8 workflow), visit state machine, PHI-safe logging, clinical validation, Supabase dashboard sync, ChartingRelief product identity with Vivian persona, 76 tests passing.
 
-**What's next:** 8 Tier 2 tools (visit lifecycle + scheduling + care planning) this week, then Tier 3 clinical assessment tools.
+**What's next:** Tier 3 clinical assessment tools (record_clinical_data, reconcile_medications). Requires real EMR data for Tier 4 (OASIS).
 
 ---
 
@@ -82,14 +82,22 @@ Phase tracking document for Ratchet MCP server development.
 - [x] server.json with Supabase env vars
 - [x] MIT LICENSE
 
-### Phase 3: Tool Suite Expansion — IN PROGRESS
+### Phase 3: Tool Suite Expansion ✅ (Mar 2026)
 
 - [x] PRD formalized: 14 tools, 22 operations, full parameter schemas
-- [ ] Visit state machine (scheduled → in_progress → completed/cancelled)
-- [ ] 8 Tier 2 mock tools implemented
-- [ ] Tests for visit lifecycle, scheduling, care planning
-- [ ] Updated tool registration in index.ts
-- [ ] Dashboard updated to display new data types
+- [x] Visit state machine (scheduled → in_progress → completed/cancelled)
+- [x] 8 Tier 2 mock tools implemented
+- [x] Tests for visit lifecycle, scheduling, care planning (42 new tests, 76 total)
+- [x] Updated tool registration in index.ts
+- [x] Dashboard updated to display new data types
+
+### Phase 4: ChartingRelief Rebrand ✅ (Mar 2026)
+
+- [x] Marketplace application rewrite (product name → ChartingRelief, AI persona → Vivian)
+- [x] MCP server README rewrite (ChartingRelief product story, Vivian persona)
+- [x] Dashboard data alignment (seed.sql, patients.json aligned to mock-data.ts)
+- [x] RATCHET-INTEGRATION.md updated with correct patient names, env var placeholders
+- [x] PRD metadata updated to reflect implementation status
 
 ---
 
@@ -103,18 +111,18 @@ src/
 │   ├── search-patient.ts     # Tier 1 ✅
 │   ├── create-visit-note.ts  # Tier 1 ✅
 │   ├── get-patient-history.ts # Tier 1 ✅
-│   ├── get-care-team.ts      # Tier 2 (planned)
-│   ├── get-schedule.ts       # Tier 2 (planned)
-│   ├── start-visit.ts        # Tier 2 (planned)
-│   ├── update-visit-note.ts  # Tier 2 (planned)
-│   ├── complete-visit.ts     # Tier 2 (planned)
-│   ├── cancel-visit.ts       # Tier 2 (planned)
-│   ├── schedule-next-visit.ts # Tier 2 (planned)
-│   └── manage-care-plan.ts   # Tier 2 (planned)
+│   ├── get-care-team.ts      # Tier 2 ✅
+│   ├── get-schedule.ts       # Tier 2 ✅
+│   ├── start-visit.ts        # Tier 2 ✅
+│   ├── update-visit-note.ts  # Tier 2 ✅
+│   ├── complete-visit.ts     # Tier 2 ✅
+│   ├── cancel-visit.ts       # Tier 2 ✅
+│   ├── schedule-next-visit.ts # Tier 2 ✅
+│   └── manage-care-plan.ts   # Tier 2 ✅
 ├── services/
 │   ├── patient-service.ts    # Business logic
 │   ├── mock-data.ts          # Synthetic patient/visit data
-│   ├── visit-state.ts        # Visit state machine (planned)
+│   ├── visit-state.ts        # Visit state machine ✅
 │   └── supabase-service.ts   # Dashboard sync
 ├── types/
 │   └── index.ts              # TypeScript interfaces
