@@ -2,7 +2,7 @@
 
 ## Reporting a Vulnerability
 
-If you discover a security vulnerability in Ratchet MCP, please report it responsibly:
+If you discover a security vulnerability in ChartingHero MCP, please report it responsibly:
 
 - **Email**: security@memyselfplusai.com
 - **Response time**: We aim to acknowledge reports within 48 hours
@@ -19,7 +19,7 @@ Please do **not** open a public GitHub issue for security vulnerabilities.
 
 ### Protected Health Information (PHI)
 
-Ratchet is designed for healthcare environments. Our PHI-safe engineering includes:
+ChartingHero is designed for healthcare environments. Our PHI-safe engineering includes:
 
 - **Log sanitization**: All patient identifiers, names, diagnoses, and clinical data are automatically redacted from logs via field-level filtering
 - **Sensitive field redaction**: Fields matching PHI patterns (name, DOB, SSN, diagnosis, medication, notes) are replaced with `[REDACTED]` before any log output
@@ -42,7 +42,7 @@ We monitor dependencies for known vulnerabilities. Run `npm audit` to check the 
 
 ## HIPAA Compliance Roadmap
 
-Ratchet is not yet HIPAA-compliant. Our roadmap includes:
+ChartingHero is not yet HIPAA-compliant. Our roadmap includes:
 
 1. **Row-Level Security (RLS)** on all Supabase tables
 2. **Business Associate Agreement (BAA)** with Supabase (requires Enterprise plan)
@@ -53,6 +53,6 @@ Ratchet is not yet HIPAA-compliant. Our roadmap includes:
 ## Best Practices for Users
 
 - Store API keys in environment variables, not in code or config files
-- Use the `RATCHET_MOCK_MODE=true` flag when testing or demonstrating
+- Use the `CHARTINGHERO_MOCK_MODE=true` flag when testing or demonstrating
 - Do not use real patient data in mock mode or development environments
 - Review the [MCP security documentation](https://modelcontextprotocol.io/docs/concepts/security) for transport-level security guidance

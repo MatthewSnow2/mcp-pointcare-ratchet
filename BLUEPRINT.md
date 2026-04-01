@@ -1,14 +1,14 @@
-# Ratchet MCP - Blueprint
+# ChartingHero MCP - Blueprint
 
-Phase tracking document for Ratchet MCP server development.
+Phase tracking document for ChartingHero MCP server development.
 
 ## Current Status
 
-**Phase:** ChartingRelief Rebrand Complete / Marketplace Ready
+**Phase:** ChartingHero Rebrand Complete / Marketplace Ready
 **Branch:** `polish/marketplace-readiness`
-**Last Updated:** 2026-03-14
+**Last Updated:** 2026-04-01
 
-**What's built:** 11 MCP tools (3 core + 8 workflow), visit state machine, PHI-safe logging, clinical validation, Supabase dashboard sync, ChartingRelief product identity with Vivian persona, 76 tests passing.
+**What's built:** 11 MCP tools (3 core + 8 workflow), visit state machine, PHI-safe logging, clinical validation, Supabase dashboard sync, ChartingHero product identity with Vivian persona, 76 tests passing.
 
 **What's next:** Tier 3 clinical assessment tools (record_clinical_data, reconcile_medications). Requires real EMR data for Tier 4 (OASIS).
 
@@ -74,7 +74,7 @@ Phase tracking document for Ratchet MCP server development.
 - [x] SECURITY.md with HIPAA compliance roadmap
 - [x] React ErrorBoundary on dashboard
 - [x] DEMO banner (synthetic data disclaimer)
-- [x] Dashboard branding (Ratchet icon + text)
+- [x] Dashboard branding (ChartingHero icon + text)
 - [x] Aligned mock data between MCP server and dashboard
 - [x] PHI sanitization bug fixes (camelCase matching, message string redaction)
 - [x] 14 PHI sanitization tests
@@ -91,10 +91,10 @@ Phase tracking document for Ratchet MCP server development.
 - [x] Updated tool registration in index.ts
 - [x] Dashboard updated to display new data types
 
-### Phase 4: ChartingRelief Rebrand ✅ (Mar 2026)
+### Phase 4: ChartingHero Rebrand ✅ (Mar 2026)
 
-- [x] Marketplace application rewrite (product name → ChartingRelief, AI persona → Vivian)
-- [x] MCP server README rewrite (ChartingRelief product story, Vivian persona)
+- [x] Marketplace application rewrite (product name → ChartingHero, AI persona → Vivian)
+- [x] MCP server README rewrite (ChartingHero product story, Vivian persona)
 - [x] Dashboard data alignment (seed.sql, patients.json aligned to mock-data.ts)
 - [x] RATCHET-INTEGRATION.md updated with correct patient names, env var placeholders
 - [x] PRD metadata updated to reflect implementation status

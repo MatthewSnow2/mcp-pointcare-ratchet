@@ -10,7 +10,7 @@
 # PROJECT METADATA
 # -----------------------------------------------------------------------------
 project:
-  name: "mcp-ratchet-clinical-charting"
+  name: "chartinghero"
   version: "0.2.0"
   description: |
     MCP server for clinical charting via Claude. Enables home health nurses
@@ -23,12 +23,12 @@ project:
   transport: "stdio"
 
   repository:
-    url: "https://github.com/m2ai-mcp-servers/mcp-ratchet-clinical-charting"
+    url: "https://github.com/m2ai-mcp-servers/chartinghero"
     branch: "main"
 
   related:
     dashboard:
-      url: "https://github.com/m2ai-mcp-servers/ratchet-demo-emr"
+      url: "https://github.com/m2ai-mcp-servers/chartinghero-demo-emr"
       demo: "https://pointcare-emr-demo.netlify.app"
 
 # -----------------------------------------------------------------------------
@@ -1065,7 +1065,7 @@ acceptance_criteria:
 success_metrics:
   - metric: "Time to document visit"
     baseline: "15-30 minutes (manual EMR entry)"
-    target: "< 2 minutes (via Claude + Ratchet)"
+    target: "< 2 minutes (via Claude + ChartingHero)"
   - metric: "Documentation completeness"
     baseline: "Variable — nurses skip optional fields under time pressure"
     target: "100% required fields, 80%+ optional fields via natural language"

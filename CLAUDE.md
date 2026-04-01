@@ -4,17 +4,17 @@ This file provides guidance to Claude Code when working with code in this reposi
 
 ## Project Overview
 
-**Ratchet** is an MCP (Model Context Protocol) server for PointCare EMR integration. It enables Claude to document patient visits directly into the Electronic Medical Records system, reducing administrative burden for home health nurses.
+**ChartingHero** is an MCP (Model Context Protocol) server for PointCare EMR integration. It enables Claude to document patient visits directly into the Electronic Medical Records system, reducing administrative burden for home health nurses.
 
 ## Origin Story
 
-Ratchet evolved from the **M2AI NurseCall** n8n workflow (ID: 3i0JkX1GdDXnTQbx), which was built to help home health nurses with visit documentation. The original workflow:
+ChartingHero evolved from the **M2AI NurseCall** n8n workflow (ID: 3i0JkX1GdDXnTQbx), which was built to help home health nurses with visit documentation. The original workflow:
 - Receives text via Twilio from nurses in the field
 - Uses phone number as unique identifier
 - Triggers VAPI call to collect visit notes
 - Emails summary back to nurse
 
-Ratchet extends this by providing direct EMR integration via MCP tools.
+ChartingHero extends this by providing direct EMR integration via MCP tools.
 
 ## Technical Stack
 
@@ -36,7 +36,7 @@ npm run lint         # Run ESLint
 ## Project Structure
 
 ```
-ratchet/
+chartinghero/
 ├── src/
 │   ├── index.ts              # MCP server entry point
 │   ├── config.ts             # Environment + mode configuration
@@ -114,8 +114,8 @@ POINTCARE_CLIENT_SECRET=  # OAuth client secret (if applicable)
 
 ## Related Projects
 
-- **Grimlock**: Autonomous MCP Server Factory that will build Ratchet
-- **M2AI NurseCall**: n8n workflow that will integrate with Ratchet
+- **Grimlock**: Autonomous MCP Server Factory that built ChartingHero
+- **M2AI NurseCall**: n8n workflow that will integrate with ChartingHero
 
 ## Scope Boundaries
 

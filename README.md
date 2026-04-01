@@ -1,6 +1,6 @@
-# ChartingRelief — AI Clinical Documentation for Home Health
+# ChartingHero — AI Clinical Documentation for Home Health
 
-**Charting relief for nurses, powered by Claude.** ChartingRelief eliminates 80-85% of post-visit documentation time for home health nurses by transforming natural-language visit dictation into structured EMR records.
+**Charting relief for nurses, powered by Claude.** ChartingHero eliminates 80-85% of post-visit documentation time for home health nurses by transforming natural-language visit dictation into structured EMR records.
 
 > Built by [MeMyselfPlusAI](https://memyselfplusai.com) — an RN co-founder with AccentCare field experience + an engineer building at the intersection of AI and healthcare.
 
@@ -15,7 +15,7 @@ Nurse describes visit in natural language
         │
         ▼
 Claude + Vivian (AI clinical assistant)
-  uses Ratchet MCP tools to structure data
+  uses ChartingHero MCP tools to structure data
         │
         ▼
 EMR System (via API) + Live Dashboard
@@ -23,7 +23,7 @@ EMR System (via API) + Live Dashboard
 
 **Vivian** is the AI clinical documentation assistant — named after [Vivian Bullwinkel](https://en.wikipedia.org/wiki/Vivian_Bullwinkel), the Australian military nurse who survived the Bangka Island massacre in WWII and returned to nursing. Vivian guides nurses through visit documentation using qualifying questions, then structures their natural-language responses into validated clinical data.
 
-**Ratchet** is the MCP server that gives Claude access to 11 clinical documentation tools:
+**ChartingHero** is the MCP server that gives Claude access to 11 clinical documentation tools:
 
 ### Core Tools (Tier 1)
 
@@ -60,7 +60,7 @@ EMR System (via API) + Live Dashboard
 |-----------|---------------|
 | ![Dashboard](docs/dashboard-schedule.png) | ![Patient Detail](docs/patient-detail.png) |
 
-*Screenshots show the companion [EMR Dashboard](https://github.com/m2ai-mcp-servers/ratchet-demo-emr) displaying data populated by Ratchet via Claude.*
+*Screenshots show the companion [EMR Dashboard](https://github.com/m2ai-mcp-servers/chartinghero-demo-emr) displaying data populated by ChartingHero via Claude.*
 
 ## Quick Start
 
@@ -74,9 +74,9 @@ Add to your Claude Desktop config:
 ```json
 {
   "mcpServers": {
-    "ratchet": {
+    "chartinghero": {
       "command": "npx",
-      "args": ["-y", "mcp-ratchet-clinical-charting"]
+      "args": ["-y", "chartinghero"]
     }
   }
 }
@@ -87,8 +87,8 @@ Restart Claude Desktop. Try: *"Search for patient Jane Marple"*
 ### From Source
 
 ```bash
-git clone https://github.com/m2ai-mcp-servers/mcp-ratchet-clinical-charting.git
-cd mcp-ratchet-clinical-charting
+git clone https://github.com/m2ai-mcp-servers/chartinghero.git
+cd chartinghero
 npm install
 npm run build
 npm test     # 76 tests passing
@@ -147,7 +147,7 @@ Claude: ✅ Follow-up scheduled — Dec 23 at 09:00, skilled nursing
 | `POINTCARE_API_KEY` | No* | EMR API key |
 | `SUPABASE_URL` | No | Supabase URL for dashboard sync |
 | `SUPABASE_SERVICE_KEY` | No | Supabase key for dashboard sync |
-| `RATCHET_MOCK_MODE` | No | Force mock mode (`true`/`false`) |
+| `CHARTINGHERO_MOCK_MODE` | No | Force mock mode (`true`/`false`) |
 | `LOG_LEVEL` | No | `debug` / `info` / `warn` / `error` |
 
 *Required for production EMR integration. Mock mode activates automatically when not set.
@@ -192,11 +192,11 @@ npm run build        # TypeScript → dist/
 
 ## Origin
 
-ChartingRelief started as a multi-service voice workflow — Twilio SMS triggered a timer, VAPI voice agent called the nurse for qualifying questions, n8n processed the responses, and email delivered the recap. Four services to do what MCP now enables natively within the Claude ecosystem. The rebuild eliminated all middleware.
+ChartingHero started as a multi-service voice workflow — Twilio SMS triggered a timer, VAPI voice agent called the nurse for qualifying questions, n8n processed the responses, and email delivered the recap. Four services to do what MCP now enables natively within the Claude ecosystem. The rebuild eliminated all middleware.
 
 ## Related Projects
 
-- **[ChartingRelief EMR Dashboard](https://github.com/m2ai-mcp-servers/ratchet-demo-emr)** — React dashboard displaying visit data populated by this MCP server
+- **[ChartingHero EMR Dashboard](https://github.com/m2ai-mcp-servers/chartinghero-demo-emr)** — React dashboard displaying visit data populated by this MCP server
 - **[Live Demo](https://pointcare-emr-demo.netlify.app)** — Deployed dashboard with synthetic patient data
 
 ## License

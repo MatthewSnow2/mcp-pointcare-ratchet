@@ -1,5 +1,5 @@
 /**
- * Mock data for testing Ratchet MCP server
+ * Mock data for testing ChartingHero MCP server
  *
  * This module provides realistic test data for development and testing
  * without requiring access to the PointCare API.

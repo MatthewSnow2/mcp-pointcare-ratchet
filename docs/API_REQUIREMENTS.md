@@ -1,6 +1,6 @@
 # PointCare API Requirements
 
-This document outlines what information is needed from PointCare to complete the Ratchet MCP server.
+This document outlines what information is needed from PointCare to complete the ChartingHero MCP server.
 
 ## Status
 
@@ -30,7 +30,7 @@ We need to know how PointCare authenticates API requests:
 
 ### 3. Endpoints Required
 
-For the Ratchet MCP server, we need API endpoints for:
+For the ChartingHero MCP server, we need API endpoints for:
 
 #### Patient Search
 - Endpoint to search patients by name

@@ -16,7 +16,7 @@ import { canTransition } from '../src/services/visit-state';
 import { mockSchedule, mockVisitNotes, mockCarePlans } from '../src/services/mock-data';
 
 // Force mock mode
-process.env.RATCHET_MOCK_MODE = 'true';
+process.env.CHARTINGHERO_MOCK_MODE = 'true';
 
 // ── Visit State Machine ──────────────────────────────────────────────
 

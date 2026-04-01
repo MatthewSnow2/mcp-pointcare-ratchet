@@ -7,7 +7,7 @@
 import { searchPatients } from '../services/patient-service.js';
 import { getConfig } from '../config.js';
 import { logger } from '../utils/logger.js';
-import { formatErrorForMcp, RatchetError } from '../utils/errors.js';
+import { formatErrorForMcp, ChartingHeroError } from '../utils/errors.js';
 import type { PatientSearchParams } from '../types/index.js';
 
 /**

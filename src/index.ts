@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * Ratchet MCP Server
+ * ChartingHero MCP Server
  *
  * MCP server for PointCare EMR integration.
  * Enables Claude to document patient visits directly into EMR.
@@ -57,7 +57,7 @@ if (configErrors.length > 0 && !config.mockMode) {
 // Create MCP server instance
 const server = new Server(
   {
-    name: 'ratchet-mcp',
+    name: 'chartinghero-mcp',
     version: '0.1.0',
   },
   {
@@ -149,7 +149,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
 // Start the server
 async function main() {
-  logger.info('Starting Ratchet MCP server', {
+  logger.info('Starting ChartingHero MCP server', {
     version: '0.1.0',
     mockMode: config.mockMode,
     supabaseEnabled: config.supabaseEnabled,
@@ -168,7 +168,7 @@ async function main() {
   const transport = new StdioServerTransport();
   await server.connect(transport);
 
-  logger.info('Ratchet MCP server running on stdio');
+  logger.info('ChartingHero MCP server running on stdio');
 }
 
 main().catch((error) => {
