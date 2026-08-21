@@ -61,6 +61,10 @@ export async function searchPatients(
       const id = patient.id.id.toLowerCase();
       const phone = (patient.contact.phone || '').replace(/\D/g, '');
       const queryDigits = query.replace(/\D/g, '');
+      // An all-letter query strips to the empty string, and "".includes()
+      // is true for every record. Only attempt a phone match when the query
+      // actually carries digits, otherwise a name search matches everyone.
+      const phoneMatches = queryDigits.length > 0 && phone.includes(queryDigits);
 
       switch (searchType) {
         case 'name':
@@ -68,13 +72,13 @@ export async function searchPatients(
         case 'id':
           return id.includes(query);
         case 'phone':
-          return phone.includes(queryDigits);
+          return phoneMatches;
         case 'all':
         default:
           return (
             fullName.includes(query) ||
             id.includes(query) ||
-            phone.includes(queryDigits)
+            phoneMatches
           );
       }
     });

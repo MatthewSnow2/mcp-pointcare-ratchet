@@ -25,6 +25,28 @@ describe('searchPatients', () => {
     expect(result.results[0].firstName).toBe('Eleanor');
   });
 
+  test('should return only the matching patient for a full name query', async () => {
+    const result = await searchPatients({ query: 'Eleanor Thompson' });
+
+    expect(result.results.length).toBe(1);
+    expect(result.total).toBe(1);
+    expect(result.results[0].id).toBe('PT-10001');
+  });
+
+  test('should return empty results for an all-letter name with no match', async () => {
+    const result = await searchPatients({ query: 'Zebediah Quartermaine' });
+
+    expect(result.results.length).toBe(0);
+    expect(result.total).toBe(0);
+  });
+
+  test('should return empty results for an all-letter phone search', async () => {
+    const result = await searchPatients({ query: 'Eleanor', searchType: 'phone' });
+
+    expect(result.results.length).toBe(0);
+    expect(result.total).toBe(0);
+  });
+
   test('should find patient by ID', async () => {
     const result = await searchPatients({ query: 'PT-10001', searchType: 'id' });
 
